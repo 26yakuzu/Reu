@@ -119,14 +119,20 @@ def prepare_vectors(out: Path) -> dict:
         pd.DataFrame(allb.drop(columns="geometry")).to_parquet(out / f"hybas_lev{lev}_af_topology.parquet")
         res[f"hybas_lev{lev}_nga.parquet"] = {"rows": len(hit), "note": "unclipped polygons; topology table keeps upstream context"}
 
-    # Coverage outlines
-    aoi = gpd.read_file(E / "AOI_boundaries" / "AOI0_OugunLagos.shp").to_crs(4326)[["geometry"]]
-    aoi["layer"] = "eo4forest_aoi"
-    had = gpd.read_file(H / "Study_Area_Shp" / "Hadejia_boundary_FAO_UTM_32N.shp").to_crs(4326)[["geometry"]]
-    had["layer"] = "hadejia_study_area"
-    cov = pd.concat([aoi, had], ignore_index=True)
+    # Coverage outlines (each optional: a source that was not fetched is skipped and recorded)
+    parts, missing = [], []
+    for layer, path in [("eo4forest_aoi", E / "AOI_boundaries" / "AOI0_OugunLagos.shp"),
+                        ("hadejia_study_area", H / "Study_Area_Shp" / "Hadejia_boundary_FAO_UTM_32N.shp")]:
+        if path.exists():
+            g = gpd.read_file(path).to_crs(4326)[["geometry"]]
+            g["layer"] = layer
+            parts.append(g)
+        else:
+            missing.append(layer)
+    cov = (gpd.GeoDataFrame(pd.concat(parts, ignore_index=True), crs=4326) if parts
+           else gpd.GeoDataFrame({"layer": []}, geometry=[], crs=4326))
     cov.to_file(out / "coverage_outlines.geojson", driver="GeoJSON")
-    res["coverage_outlines.geojson"] = {"rows": len(cov)}
+    res["coverage_outlines.geojson"] = {"rows": len(cov), "missing_sources": missing}
     return res
 
 

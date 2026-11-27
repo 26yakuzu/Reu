@@ -1,6 +1,6 @@
 {
   "prep_version": "2026.11.27-2",
-  "generated_at": "2026-11-27T10:04:09+00:00",
+  "generated_at": "2026-11-27T10:30:56+00:00",
   "vectors": {
     "nga_adm0_display.geojson": {
       "rows": 1,
@@ -32,7 +32,8 @@
       "note": "unclipped polygons; topology table keeps upstream context"
     },
     "coverage_outlines.geojson": {
-      "rows": 2
+      "rows": 2,
+      "missing_sources": []
     }
   },
   "rasters": {
