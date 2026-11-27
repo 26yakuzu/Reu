@@ -310,7 +310,18 @@ def audit_soilgrids(b: Boundary) -> dict:
         ok = ~np.isnan(sums)
         checks[d] = {"n": int(ok.sum()), "sum_of_means_pct_p01_p50_p99": [round(float(q), 1) for q in np.percentile(sums[ok], [1, 50, 99])],
                      "nodata_share": round(float(1 - ok.mean()), 3)}
+    mask_tags = {}
+    for n in present:
+        with rasterio.open(OUT / n) as r:
+            t = r.tags()
+        mask_tags[n] = {"retrieval": "wcs" if "WCS" in t.get("retrieval", "") else "vrt",
+                        "zeros_kept_as_data": int(t.get("zeros_outside_reference_mask", 0)),
+                        "nonzero_inside_mask_REVIEW": int(t.get("nonzero_inside_reference_mask", 0))}
+    review = [n for n, v in mask_tags.items() if v["nonzero_inside_mask_REVIEW"]]
     return {"status": "ok" if len(present) == len(expected) else "partial", "layers_expected": len(expected),
+            "layers_with_genuine_zeros": {n: v["zeros_kept_as_data"] for n, v in mask_tags.items() if v["zeros_kept_as_data"]},
+            "layers_needing_mask_review": review,
+            "retrieval_counts": {k: sum(v["retrieval"] == k for v in mask_tags.values()) for k in ("wcs", "vrt")},
             "layers_present": len(present), "raster": meta, "composition_check_by_depth": checks,
             "eligibility": {"modelled_prior_display": "YES — labelled MODELLED with Q05-Q95 interval, native 250 m",
                             "validation_truth": "NO — model output; never evaluate against it"}}

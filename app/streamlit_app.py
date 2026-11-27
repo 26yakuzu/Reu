@@ -65,7 +65,8 @@ with st.sidebar:
 
 # ---------------------------------------------------------------- map
 D = current_dir()
-m = folium.Map(location=[lat, lon], zoom_start=7 if (lat, lon) == (9.08, 7.40) else 9, tiles="OpenStreetMap",
+TITLES = {l.id: l.title for l in RASTER_LAYERS} | EXTRA_LAYERS
+m = folium.Map(location=[lat, lon], zoom_start=st.session_state.get("zoom", 11), tiles="OpenStreetMap",
                control_scale=True)
 folium.GeoJson(json.loads((D / "nga_adm1_display.geojson").read_text()), name="Nigeria states (geoBoundaries/GRID3)",
                style_function=lambda f: {"color": "#555", "weight": 1, "fillOpacity": 0},
@@ -77,7 +78,7 @@ for lid, on in show.items():
     if on and (ov := overlay(lid)):
         png, bounds = ov
         folium.raster_layers.ImageOverlay("data:image/png;base64," + base64.b64encode(png).decode(), bounds=bounds,
-                                          name=lid, mercator_project=False, opacity=0.8).add_to(m)
+                                          name=TITLES.get(lid, lid), mercator_project=False, opacity=0.8).add_to(m)
 if show_basins:
     g = gpd.read_parquet(D / "hybas_lev06_nga.parquet")[["HYBAS_ID", "PFAF_ID", "SUB_AREA", "geometry"]]
     g["geometry"] = g.geometry.simplify(0.01)
@@ -94,12 +95,16 @@ if show_gcp:
     g = g[g.qc_reject_reason == ""]
     for _, r in g.iterrows():
         folium.CircleMarker([r.lat, r.lon], radius=3, color="#33a02c", tooltip=r.class_name).add_to(m)
-folium.Marker([lat, lon], tooltip="Selected location").add_to(m)
-folium.LayerControl(collapsed=False).add_to(m)
+# Leaflet's default marker image path is mis-resolved inside the component iframe -> use a vector marker
+folium.CircleMarker([lat, lon], radius=9, color="#000", weight=3, fill=True, fill_color="#ffeb3b", fill_opacity=0.9,
+                    tooltip=f"Selected location {lat:.5f}, {lon:.5f}").add_to(m)
+folium.LayerControl(collapsed=True).add_to(m)
 
 col_map, col_panel = st.columns([3, 2])
 with col_map:
-    out = st_folium(m, height=620, use_container_width=True, returned_objects=["last_clicked"])
+    out = st_folium(m, height=620, use_container_width=True, returned_objects=["last_clicked", "zoom"])
+    if out and out.get("zoom"):
+        st.session_state.zoom = out["zoom"]
     if out and out.get("last_clicked"):
         c = out["last_clicked"]
         if (round(c["lat"], 5), round(c["lng"], 5)) != (round(lat, 5), round(lon, 5)):

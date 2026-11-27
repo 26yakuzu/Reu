@@ -148,8 +148,15 @@ def extract_one_wcs(prop: str, depth: str, stat: str, retries: int = 3) -> Fetch
             tmp.replace(dst)
             tmp_dl.unlink()
             md5, sha = hash_file(dst)
-            st = "extracted_wcs" if zeros_outside_mask == 0 and nonzero_inside_mask == 0 else \
-                f"extracted_wcs_mask_mismatch(z_out={zeros_outside_mask},nz_in={nonzero_inside_mask})"
+            # zeros outside the reference mask are genuine 0 g/kg predictions (verified against the VRT for
+            # silt_0-5cm_Q0.05 on 2026-11-27: 5/5 sampled pixels are 0 in the VRT, not nodata) -> kept as data.
+            # Non-zero values inside the mask would mean the masks differ -> flagged for review.
+            if nonzero_inside_mask:
+                st = f"extracted_wcs_REVIEW_mask_differs(nz_in={nonzero_inside_mask})"
+            elif zeros_outside_mask:
+                st = f"extracted_wcs_valid_zeros_kept({zeros_outside_mask})"
+            else:
+                st = "extracted_wcs"
             return FetchRecord("soilgrids", dst.name, url, rel(dst), dst.stat().st_size, md5, sha, None, None, st, _now())
         except Exception as exc:
             if attempt == retries - 1:

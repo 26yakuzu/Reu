@@ -66,8 +66,10 @@ def load_labels() -> gpd.GeoDataFrame:
 def _sample_tile(tile, pts: pd.DataFrame) -> pd.DataFrame:
     ix, iy = tile
     rows = {i: {} for i in pts.index}
-    env = dict(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", GDAL_HTTP_MAX_RETRY="5", GDAL_HTTP_RETRY_DELAY="2",
-               CPL_VSIL_CURL_ALLOWED_EXTENSIONS=".tif", VSI_CACHE="TRUE")
+    # HTTP timeout is essential: without it a stalled range request blocks forever (observed 2026-11-27)
+    env = dict(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", GDAL_HTTP_TIMEOUT=60, GDAL_HTTP_CONNECTTIMEOUT=20,
+               GDAL_HTTP_MAX_RETRY=4, GDAL_HTTP_RETRY_DELAY=3, CPL_VSIL_CURL_ALLOWED_EXTENSIONS=".tif",
+               VSI_CACHE=True, GDAL_CACHEMAX=256)
     with rasterio.Env(**env):
         for band in BANDS:
             url = "/vsicurl/" + GEOMAD_URL.format(ix=ix, iy=iy, y=GEOMAD_YEAR, band=band)
@@ -97,23 +99,46 @@ def _wofs_features(g: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out, index=g.index)
 
 
-def build_features(workers: int = 8, force: bool = False) -> Path:
+def build_features(workers: int = 6, force: bool = False) -> Path:
+    """Sample GeoMAD 2018 at every label point. Per-tile results are checkpointed under
+    features/_tiles/ so an interrupted run resumes; a tile with failed reads is retried."""
     if FEATURES_PATH.exists() and not force:
         return FEATURES_PATH
     g = load_labels()
     g["tile"] = [tile_of(x, y) for x, y in zip(g.x6933, g.y6933)]
     groups = list(g.groupby("tile"))
+    ckpt = FEATURES_PATH.parent / "_tiles"
+    ckpt.mkdir(parents=True, exist_ok=True)
+    done = {"n": 0}
+
+    def run(kv):
+        (ix, iy), pts = kv
+        f = ckpt / f"x{ix:03d}y{iy:03d}_{GEOMAD_YEAR}.parquet"
+        if f.exists() and not force:
+            part = pd.read_parquet(f)
+        else:
+            for attempt in range(3):
+                part = _sample_tile((ix, iy), pts)
+                if part[list(BANDS)].notna().any(axis=1).all():   # every point got at least one band
+                    break
+            part.to_parquet(f)
+        done["n"] += 1
+        print(f"[features] tile x{ix:03d}y{iy:03d}: {len(pts)} pts, "
+              f"{int(part[list(BANDS)].isna().any(axis=1).sum())} incomplete — {done['n']}/{len(groups)} tiles", flush=True)
+        return part
+
     with ThreadPoolExecutor(workers) as ex:
-        parts = list(ex.map(lambda kv: _sample_tile(kv[0], kv[1]), groups))
+        parts = list(ex.map(run, groups))
     feats = pd.concat(parts).sort_index()
     df = pd.concat([g.drop(columns=["geometry", "tile"]), feats, _wofs_features(g)], axis=1)
     df = add_indices(df)
     df.attrs = {}
-    FEATURES_PATH.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(FEATURES_PATH)
     meta = {"generated_at": _now(), "geomad_year": GEOMAD_YEAR, "bands": BANDS, "n_points": int(len(df)),
             "n_tiles": len(groups), "window": "3x3 median at 10 m", "label_source": "wetland_south_ng (doi:10.5518/1314)",
-            "imagery_source": "DE Africa gm_s2_annual 1-0-0 (CC BY 4.0)", "sha256": _sha256(FEATURES_PATH)}
+            "imagery_source": "DE Africa gm_s2_annual 1-0-0 (CC BY 4.0)",
+            "rows_with_any_missing_feature": int(df[FEATURE_COLS].isna().any(axis=1).sum()),
+            "sha256": _sha256(FEATURES_PATH)}
     FEATURES_PATH.with_suffix(".json").write_text(json.dumps(meta, indent=2))
     return FEATURES_PATH
 

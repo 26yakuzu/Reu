@@ -8,9 +8,10 @@ historical flood and water extent, drainage basins, and a preliminary qualitativ
 > routes, and it never recommends entering floodwater. When evidence is missing, it abstains and recommends
 > inspection by a qualified engineer.
 
-Current status (Stages 0–2, plus API/tests): see [`docs/research/GAP_REPORT.md`](docs/research/GAP_REPORT.md).
-**No ML model has been trained.** The audit showed that no eligible Nigerian measured-texture or labelled-imagery
-data is available yet.
+Current status: see [`docs/research/GAP_REPORT.md`](docs/research/GAP_REPORT.md).
+Soil texture, image and trafficability models are **not trained**: no eligible Nigerian measured-texture,
+labelled-imagery or outcome data exist. One research model (a wetland/open-water classifier) is trained
+with spatial-block evaluation; see its model card for results and whether it passed its deployment gate.
 
 ## Setup
 
@@ -26,7 +27,10 @@ cp .env.example .env   # optional; nothing secret is required
 python -I scripts/fetch.py --include-large   # ~430 MB, verifies Zenodo md5 / Mendeley sha256
 python -I scripts/extract.py                 # safe extraction into data/raw/*/extracted (~1.5 GB)
 python -I scripts/audit.py                   # Stage 1 audit -> artifacts/reports/audit.json, docs/data_dictionary/AUDIT.md
-python -I scripts/prepare.py                 # lossless uint8 COGs + GeoParquet -> data/processed/<version>/
+python -I scripts/fetch_wofs.py              # DE Africa WOfS 1984-2025, 131 tiles (~1.2 GB), publisher sha1 verified
+python -I scripts/fetch_soilgrids.py         # SoilGrids 250 m, 72 layers over Nigeria via WCS (~1.4 GB, ~30-60 min)
+python -I scripts/prepare.py                 # lossless uint8 COGs + GeoParquet + WOfS display mosaic -> data/processed/<version>/
+python -I scripts/audit.py                   # re-run after all fetches so the audit covers WOfS and SoilGrids
 ```
 
 Raw files are never modified. Checksums go to `artifacts/manifests/raw_manifest.json`. Processed files
@@ -48,9 +52,14 @@ curl -s -X POST localhost:8000/assess -H 'content-type: application/json' -d '{"
 
 ## Training / evaluation
 
-`scripts/train.py` and `scripts/evaluate.py` currently refuse to run and print the blocker for each
-candidate model (see the gap report). The spatial-block split and leakage check that any future
-model must pass are in `src/terrasense/models/splits.py`.
+```bash
+python -I scripts/train.py --model wetland   # GeoMAD 2018 features (remote, checkpointed) -> baselines -> RF -> held-out test
+python -I scripts/evaluate.py                # per-class P/R/F1, IoU, confusion matrices, by-state accuracy, gate
+python -I scripts/train.py                   # lists blocked models and why
+```
+
+The spatial-block split and leakage check are in `src/terrasense/models/splits.py`. Precautionary screening
+rules (e.g. the WOfS hazard threshold) are in `configs/assessment.yaml`.
 
 ## Layout
 
