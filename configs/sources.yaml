@@ -1,0 +1,258 @@
+# TerraSense Nigeria — source registry
+#
+# Every entry records what was VERIFIED against the live repository metadata
+# (see `verified` and `verified_on`) versus what is still UNKNOWN. Fields marked
+# `claimed:` come from the project brief and have NOT been confirmed.
+#
+# `files[].checksum` values are copied from the repository API (Zenodo md5,
+# Mendeley sha256). `scripts/fetch.py` refuses a file whose checksum differs.
+# `fetch: false` means the file is not downloaded by default (too large for
+# the MVP or not yet needed); pass --include-large to fetch it.
+
+boundary:
+  id: geoboundaries_nga
+  title: geoBoundaries Nigeria ADM0/ADM1 (gbOpen), source GRID3, year represented 2022
+  url: https://www.geoboundaries.org/api/current/gbOpen/NGA/ADM0/
+  licence: CC-BY-4.0
+  attribution: "Runfola et al. (2020) geoBoundaries, PLoS ONE 15(4): e0231866; boundary source GRID3"
+  verified: true
+  verified_on: 2026-11-27
+  files:
+    - key: geoBoundaries-NGA-ADM0.geojson
+      url: https://www.geoboundaries.org/data/snapshots/1c423398df24ddf6e730b116567d2181c9782778d0459c3f3b76ca2f9f12b6bc/gbOpen/NGA/ADM0/geoBoundaries-NGA-ADM0.geojson
+      checksum: null   # API publishes none; sha256 recorded on first download
+      fetch: true
+    - key: geoBoundaries-NGA-ADM1.geojson
+      url: https://www.geoboundaries.org/data/snapshots/1c423398df24ddf6e730b116567d2181c9782778d0459c3f3b76ca2f9f12b6bc/gbOpen/NGA/ADM1/geoBoundaries-NGA-ADM1.geojson
+      checksum: null
+      fetch: true
+
+sources:
+  - id: s4a_field
+    title: Soils4Africa — Field data from a continental soil survey campaign
+    doi: 10.5281/zenodo.17699297
+    publisher: Zenodo
+    version: "1"
+    published: 2026-06-26
+    licence: CC-BY-4.0
+    attribution: "Mesele, S., Huising, J., Csorba, A., et al. (2026). Soils4Africa field data. Zenodo. doi:10.5281/zenodo.17699297"
+    kind: point_observations
+    measured: true          # field description by surveyors (FAO guidelines), not lab
+    role: [soil_context, surface_description]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Zenodo record contains FIELD data only (15k+ sites, 33 countries). Publisher
+      states quality control is ongoing. Laboratory results (texture, bulk density,
+      OC, chemistry) are listed on africasis.isric.org/download.html but every
+      download link on that page was a placeholder (href="#") when checked, so lab
+      texture is NOT available to this project yet. Sampling targeted agricultural
+      land monitoring; it is not representative of roads or construction sites.
+    files:
+      - {key: s4a_field_data.csv, url: "https://zenodo.org/api/records/17699297/files/s4a_field_data.csv/content", checksum: "md5:23416634c2a7ae89e715980f77021229", size: 7379850, fetch: true}
+      - {key: s4a_field_data-tableschema.csv, url: "https://zenodo.org/api/records/17699297/files/s4a_field_data-tableschema.csv/content", checksum: "md5:4cdfe065de45814241fff7e09a35a405", size: 5560, fetch: true}
+      - {key: README.md, url: "https://zenodo.org/api/records/17699297/files/README.md/content", checksum: "md5:a6c32ae2839f6e6357c2973aba0dfb07", size: 741, fetch: true}
+
+  - id: s4a_lab
+    title: Soils4Africa — laboratory texture / bulk density / OC / chemistry
+    url: https://africasis.isric.org/download.html
+    licence: CC-BY-4.0 (as stated on page)
+    kind: point_observations
+    measured: true
+    role: [soil_texture_target]
+    verified: false
+    verified_on: 2026-11-27
+    status: blocked
+    notes: "Download links on the page are placeholders (href=\"#\"). Not obtainable. Re-check later."
+    files: []
+
+  - id: ozoro_texture
+    title: Soil characterization for texture and moisture properties ... Ozoro, Nigeria
+    doi: 10.17632/ph9fx5bj9n.1
+    publisher: Mendeley Data
+    version: "1"
+    published: 2025-05-21
+    licence: CC-BY-4.0
+    attribution: "Okolotu, G. I., Ozioko, C. F., Ofuyekpone, O. D., Oluka, I. (2025). Mendeley Data, V1, doi:10.17632/ph9fx5bj9n.1"
+    kind: point_observations
+    measured: true
+    role: [soil_texture_target_candidate]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Abstract: 750 samples, 0-10 cm, texture by JAR TECHNIQUE (sedimentation jar,
+      a field method — less precise than hydrometer/pipette lab analysis), moisture
+      by oven/microwave drying. The ONLY file is a .docx (434 kB). Whether it holds
+      per-sample coordinates and sand/silt/clay percentages must be checked by
+      scripts/audit.py; do not assume it does.
+    files:
+      - {key: ozoro.docx, url: "https://data.mendeley.com/public-files/datasets/ph9fx5bj9n/files/533161eb-658b-4deb-a015-4c2523de9e4e/file_downloaded", checksum: "sha256:d07d8d9b276a6788f00e2268ec13aa41e3801d3b77f473dfb7fb1ca120304f22", size: 434176, fetch: true}
+
+  - id: wetland_south_ng
+    title: Dataset for "Wetland mapping at 10 m resolution reveals fragmentation in southern Nigeria"
+    doi: 10.5518/1314
+    paper_doi: 10.1007/s11273-023-09919-2
+    publisher: Research Data Leeds
+    published: 2023
+    licence: CC-BY-4.0
+    attribution: "Garba, S. I., Ebmeier, S. K., Bastin, J.-F., Mollicone, D., Holden, J. (2023). Wetlands Ecology and Management. doi:10.1007/s11273-023-09919-2; data doi:10.5518/1314"
+    kind: unknown_until_audit
+    measured: false        # map is a classifier product; control points may be photo-interpreted
+    role: [wetland_reference_candidate]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Repository description: "information on the wetland location and classified
+      wetland map of southern Nigeria". The single archive is only ~71 kB, which is
+      far too small for a 10 m raster of southern Nigeria; it is probably points or a
+      link/description. Contents determined by audit, not assumed. Map year 2018 per
+      brief — historical, not current.
+    files:
+      - {key: Wetland_Data.zip, url: "https://archive.researchdata.leeds.ac.uk/1254/1/Wetland_Data.zip", checksum: null, size: 71014, fetch: true}
+
+  - id: eo4forest_lagos_ogun
+    title: EO4Forest — Lagos/Ogun land cover 2015/2019/2022/2023 (20 m)
+    doi: 10.5281/zenodo.10882149
+    publisher: Zenodo
+    published: 2024-03-26
+    licence: CC-BY-4.0
+    attribution: "Pawłuszek-Filipiak, K., Włodarczyk, D., Stuchły, K., Ikuemonisan, F. (2024). Zenodo. doi:10.5281/zenodo.10882149"
+    kind: raster_classification + training_points
+    measured: false        # Random Forest map; samples are photo-interpreted labels
+    role: [visible_surface_labels_candidate, land_cover_context]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Six classes: water, urbanized, soil, cropland, grassland, forest. "soil" is
+      bare ground — NOT sand. 112k training and 11.9k validation samples ship in
+      TrainingAndValidationSamples.zip (these labels trained the published map, so the
+      map cannot be evaluated independently against them).
+    files:
+      - {key: AOI_boundaries.zip, url: "https://zenodo.org/api/records/10882149/files/AOI_boundaries.zip/content", checksum: "md5:812fc35edabc710e2e2332f76dabb529", size: 22181, fetch: true}
+      - {key: TrainingAndValidationSamples.zip, url: "https://zenodo.org/api/records/10882149/files/TrainingAndValidationSamples.zip/content", checksum: "md5:f1e9d63ba402c03acfaf12cda36cf5fa", size: 3677840, fetch: true}
+      - {key: ClassificationMaps.zip, url: "https://zenodo.org/api/records/10882149/files/ClassificationMaps.zip/content", checksum: "md5:fd5e11d14647fbab9cb481b37cf24685", size: 74643344, fetch: true}
+      - {key: ForestChangeMaps.zip, url: "https://zenodo.org/api/records/10882149/files/ForestChangeMaps.zip/content", checksum: "md5:69a66b60d1c3707ac03f1dd7d9312d4a", size: 26542756, fetch: false}
+      - {key: NRT_ForestUpdate_spectral.zip, url: "https://zenodo.org/api/records/10882149/files/NRT_ForestUpdate_spectral.zip/content", checksum: "md5:4a6ec98b49bd696fdf9297a7bd79fc3f", size: 102648874, fetch: false}
+
+  - id: hadejia_flood
+    title: HAD-FCDR25 — Multi-source flood, crop damage and recovery dataset, Hadejia
+    doi: 10.5281/zenodo.15204588
+    publisher: Zenodo
+    published: 2025-04-12
+    licence: CC-BY-4.0
+    attribution: "Lateef, L. O., Costa, H., Cabral, P. (2025). Zenodo. doi:10.5281/zenodo.15204588"
+    kind: unknown_until_audit
+    measured: false        # EO-derived flood extents + participatory mapping
+    role: [flood_extent_history, evaluation_area]
+    verified: true
+    verified_on: 2026-11-27
+    notes: "2020 and 2022 flood events. Single 143 MB zip; independence of reference data to be checked from contents/paper."
+    files:
+      - {key: hadejia.zip, url: "https://zenodo.org/api/records/15204588/files/Data-%20Improved%20Integrated%20Framework%20for%20Flooded%20Crop%20Damage%20and%20Recovery.zip/content", checksum: "md5:113919a3bb80daeb68020ecbc9610a6f", size: 142759594, fetch: false}
+
+  - id: geotech_ibadan
+    title: Soil geotechnical properties dataset for a tremor area of South-West Nigeria (Ibadan)
+    doi: 10.17632/cts2jkgvrw.2
+    publisher: Mendeley Data
+    version: "2"
+    published: 2023-05-30
+    licence: CC-BY-4.0
+    attribution: "Akanbi, O., Osueke, C., Adebayo, S. (2023). Mendeley Data, V2, doi:10.17632/cts2jkgvrw.2"
+    kind: point_observations
+    measured: true
+    role: [geotechnical_context_only]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Nine pit locations, 1.5-3.0 m depth, Ibadan, plus secondary construction
+      investigation results. Variables include moisture, Atterberg limits, grain size,
+      compaction (OMC/MDD), shear strength (cohesion, friction angle), consolidation,
+      permeability. No CBR listed. n=9 cannot support model training; context only.
+      No vehicle/crossing outcomes.
+    files:
+      - {key: geotech_ibadan.xlsx, url: "https://data.mendeley.com/public-files/datasets/cts2jkgvrw/files/1257a4ff-ee5e-42cb-8a2d-f61944afb06c/file_downloaded", checksum: "sha256:358d2c5c3708d489be60b17acc40de3d3bc3ee36d3cc82945909f6017ed18993", size: 19783, fetch: true}
+
+  - id: hydrobasins_af
+    title: HydroBASINS v1c Africa (standard, levels 1-12)
+    url: https://www.hydrosheds.org/products/hydrobasins
+    publisher: HydroSHEDS / WWF
+    version: v1c
+    licence: HydroSHEDS licence (free for non-commercial and commercial use with attribution) — confirm text in downloaded package
+    attribution: "Lehner, B., Grill, G. (2013). Hydrological Processes 27(15): 2171-2186."
+    kind: vector_polygons
+    measured: false
+    role: [basin_identity]
+    verified: true
+    verified_on: 2026-11-27
+    notes: "Per-level zips exist. Level 06 (~18 MB) and 08 (~51 MB) used for the MVP; full archive is 549 MB."
+    files:
+      - {key: hybas_af_lev06_v1c.zip, url: "https://data.hydrosheds.org/file/HydroBASINS/standard/hybas_af_lev06_v1c.zip", checksum: null, size: 17945918, fetch: true}
+      - {key: hybas_af_lev08_v1c.zip, url: "https://data.hydrosheds.org/file/HydroBASINS/standard/hybas_af_lev08_v1c.zip", checksum: null, size: 50920558, fetch: false}
+
+  - id: soilgrids
+    title: SoilGrids 2.0 (250 m) — modelled soil properties
+    url: https://files.isric.org/soilgrids/latest/data/
+    paper_doi: 10.5194/soil-7-217-2021
+    licence: CC-BY-4.0
+    licence_evidence: "docs.isric.org/globaldata/soilgrids/ — 'The SoilGrids maps are publicly available under the CC-BY 4.0 License' (checked 2026-11-27)"
+    attribution: "Poggio, L., de Sousa, L. M., Batjes, N. H., et al. (2021). SoilGrids 2.0. SOIL 7: 217-240. doi:10.5194/soil-7-217-2021"
+    kind: raster_model
+    measured: false
+    role: [soil_texture_covariate, modelled_prior]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Read via /vsicurl from ISRIC VRTs (GDAL tags: Code_version v2.0.0, Quantile Regression
+      Forests, WoSIS data stream 7). Native 250 m Interrupted Goode Homolosine; int16, nodata
+      -32768, mapped unit g/kg (divide by 10 for %). scripts/fetch_soilgrids.py extracts the
+      window covering Nigeria on the native grid (no resampling) for sand/silt/clay x 6 depths x
+      mean/Q0.05/Q0.5/Q0.95. Modelled covariate: NEVER validation truth.
+    files: []   # produced by scripts/fetch_soilgrids.py; sha256 recorded in raw_manifest.json
+
+  - id: isdasoil
+    title: iSDAsoil Africa (30 m) — modelled soil properties
+    url: https://www.isda-africa.com/isdasoil/
+    licence: CC-BY-4.0 (to confirm)
+    kind: raster_model
+    measured: false
+    role: [soil_texture_covariate, modelled_prior]
+    verified: false
+    status: not_yet_audited
+    files: []
+
+  - id: deafrica_wofs
+    title: Digital Earth Africa — WOfS all-time summary (Landsat, 1984-2025)
+    url: https://explorer.digitalearth.africa/product/wofs_ls_summary_alltime
+    spec: https://docs.digitalearthafrica.org/en/latest/data_specs/Landsat_WOfS_specs.html
+    licence: CC-BY-4.0
+    licence_evidence: "DE Africa Landsat WOfS specification, 'License: CC BY Attribution 4.0 International' (checked 2026-11-27)"
+    attribution: "Digital Earth Africa (2026). Water Observations from Space all-time summary, v1.0.0 (wofs_ls_summary_alltime)."
+    kind: raster_eo
+    measured: false        # per-pixel classifier output on Landsat observations
+    role: [historical_water_frequency]
+    verified: true
+    verified_on: 2026-11-27
+    notes: >
+      Public S3 bucket deafrica-services, product version 1-0-0, period 1984--P42Y
+      (1984-01-01..2025-12-31 per STAC item, processed 2026-02-04). EPSG:6933, 30 m,
+      96 km tiles. 131 tiles intersect Nigeria. count_wet + count_clear fetched and checked
+      against publisher .sha1 files; frequency = count_wet / count_clear (DE Africa definition).
+    files: []   # produced by scripts/fetch_wofs.py
+
+  - id: cat_rellis
+    title: CaT (MSU CAVS) and RELLIS-3D — off-road perception datasets
+    url: https://github.com/unmannedlab/RELLIS-3D
+    kind: methodology_reference
+    measured: true
+    role: [methodology_reference_only]
+    verified: false
+    notes: "Non-Nigerian. Never used as Nigerian training or validation data."
+    files: []
+
+  - id: ng_agencies
+    title: NIHSA, NiMet, NASRDA, NGSA, IITA, Federal Ministry of Works
+    kind: candidate_institutional
+    verified: false
+    status: no_access
+    notes: "No public machine-readable access verified. Requires formal data requests."
+    files: []

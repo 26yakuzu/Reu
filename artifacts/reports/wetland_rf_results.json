@@ -1,0 +1,365 @@
+{
+  "generated_at": "2026-11-27T10:02:16+00:00",
+  "seed": 20261127,
+  "features": [
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B8A",
+    "B11",
+    "B12",
+    "EMAD",
+    "SMAD",
+    "BCMAD",
+    "NDVI",
+    "MNDWI",
+    "NDWI",
+    "NDMI",
+    "wofs_freq"
+  ],
+  "classes": [
+    "open_water",
+    "vegetated_wetland",
+    "other"
+  ],
+  "label_map": {
+    "Deep water": "open_water",
+    "Shallow water": "open_water",
+    "Mangrove": "vegetated_wetland",
+    "Swamp": "vegetated_wetland",
+    "Marsh": "vegetated_wetland",
+    "Forest": "other",
+    "Cultivated land": "other",
+    "Built up/bare land": "other"
+  },
+  "n_total_complete": 1005,
+  "dropped_incomplete_features": 11,
+  "split": {
+    "n_train": 796,
+    "n_test": 207,
+    "min_m": 2225.558670483556,
+    "median_m": 11813.826909864016,
+    "share_below_gap": 0.0,
+    "exact_duplicates": 0,
+    "ok": true,
+    "block_m": 25000,
+    "buffer_m": 2000,
+    "n_blocks_total": 218,
+    "n_test_blocks": 45,
+    "n_buffer_dropped": 2
+  },
+  "class_counts": {
+    "train": {
+      "other": 373,
+      "vegetated_wetland": 287,
+      "open_water": 136
+    },
+    "test": {
+      "other": 87,
+      "open_water": 75,
+      "vegetated_wetland": 45
+    }
+  },
+  "baseline_majority": {
+    "n": 207,
+    "accuracy": 0.4203,
+    "macro_f1": 0.1973,
+    "per_class": {
+      "open_water": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 75.0
+      },
+      "vegetated_wetland": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 45.0
+      },
+      "other": {
+        "precision": 0.4203,
+        "recall": 1.0,
+        "f1-score": 0.5918,
+        "support": 87.0
+      }
+    },
+    "iou": {
+      "open_water": 0.0,
+      "vegetated_wetland": 0.0,
+      "other": 0.4203
+    },
+    "confusion_matrix": {
+      "labels": [
+        "open_water",
+        "vegetated_wetland",
+        "other"
+      ],
+      "rows_true_cols_pred": [
+        [
+          0,
+          0,
+          75
+        ],
+        [
+          0,
+          0,
+          45
+        ],
+        [
+          0,
+          0,
+          87
+        ]
+      ]
+    }
+  },
+  "baseline_rule_wofs_mndwi": {
+    "n": 207,
+    "accuracy": 0.6618,
+    "macro_f1": 0.5046,
+    "per_class": {
+      "open_water": {
+        "precision": 0.9808,
+        "recall": 0.68,
+        "f1-score": 0.8031,
+        "support": 75.0
+      },
+      "vegetated_wetland": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 45.0
+      },
+      "other": {
+        "precision": 0.5548,
+        "recall": 0.9885,
+        "f1-score": 0.7107,
+        "support": 87.0
+      }
+    },
+    "iou": {
+      "open_water": 0.6711,
+      "vegetated_wetland": 0.0,
+      "other": 0.5513
+    },
+    "confusion_matrix": {
+      "labels": [
+        "open_water",
+        "vegetated_wetland",
+        "other"
+      ],
+      "rows_true_cols_pred": [
+        [
+          51,
+          0,
+          24
+        ],
+        [
+          0,
+          0,
+          45
+        ],
+        [
+          1,
+          0,
+          86
+        ]
+      ]
+    }
+  },
+  "rf_search": {
+    "grid": {
+      "max_depth": [
+        null,
+        12
+      ],
+      "min_samples_leaf": [
+        1,
+        3,
+        8
+      ],
+      "max_features": [
+        "sqrt",
+        0.5
+      ]
+    },
+    "cv": "GroupKFold(5) over 25 km blocks",
+    "best_params": {
+      "max_depth": null,
+      "max_features": 0.5,
+      "min_samples_leaf": 1
+    },
+    "best_cv_macro_f1": 0.8025,
+    "cv_macro_f1_std": 0.0472
+  },
+  "random_forest_test": {
+    "n": 207,
+    "accuracy": 0.7585,
+    "macro_f1": 0.7258,
+    "per_class": {
+      "open_water": {
+        "precision": 0.9833,
+        "recall": 0.7867,
+        "f1-score": 0.8741,
+        "support": 75.0
+      },
+      "vegetated_wetland": {
+        "precision": 0.5,
+        "recall": 0.5111,
+        "f1-score": 0.5055,
+        "support": 45.0
+      },
+      "other": {
+        "precision": 0.7426,
+        "recall": 0.8621,
+        "f1-score": 0.7979,
+        "support": 87.0
+      }
+    },
+    "iou": {
+      "open_water": 0.7763,
+      "vegetated_wetland": 0.3382,
+      "other": 0.6637
+    },
+    "confusion_matrix": {
+      "labels": [
+        "open_water",
+        "vegetated_wetland",
+        "other"
+      ],
+      "rows_true_cols_pred": [
+        [
+          59,
+          12,
+          4
+        ],
+        [
+          0,
+          23,
+          22
+        ],
+        [
+          1,
+          11,
+          75
+        ]
+      ]
+    }
+  },
+  "block_bootstrap_95ci": {
+    "n_boot": 2000,
+    "unit": "test block (25 km)",
+    "n_blocks": 45,
+    "rf_macro_f1": [
+      0.609,
+      0.819
+    ],
+    "rule_baseline_macro_f1": [
+      0.444,
+      0.586
+    ],
+    "rf_minus_rule_macro_f1": [
+      0.098,
+      0.309
+    ],
+    "rf_vegetated_wetland_f1": [
+      0.214,
+      0.72
+    ]
+  },
+  "rf_feature_importance": {
+    "B11": 0.1926,
+    "MNDWI": 0.1125,
+    "B08": 0.1025,
+    "B06": 0.102,
+    "wofs_freq": 0.0943,
+    "B12": 0.0559,
+    "NDWI": 0.0511,
+    "B8A": 0.0404,
+    "NDMI": 0.035,
+    "BCMAD": 0.0325,
+    "B05": 0.0283,
+    "SMAD": 0.0282,
+    "EMAD": 0.028,
+    "B07": 0.0238,
+    "B02": 0.0204,
+    "NDVI": 0.018,
+    "B03": 0.0177,
+    "B04": 0.0169
+  },
+  "random_forest_test_by_state": {
+    "Abia": {
+      "n": 6,
+      "accuracy": 0.833
+    },
+    "Akwa Ibom": {
+      "n": 5,
+      "accuracy": 0.6
+    },
+    "Anambra": {
+      "n": 27,
+      "accuracy": 0.63
+    },
+    "Bayelsa": {
+      "n": 24,
+      "accuracy": 0.833
+    },
+    "Cross River": {
+      "n": 10,
+      "accuracy": 1.0
+    },
+    "Delta": {
+      "n": 49,
+      "accuracy": 0.694
+    },
+    "Ebonyi": {
+      "n": 5,
+      "accuracy": 0.8
+    },
+    "Edo": {
+      "n": 32,
+      "accuracy": 0.812
+    },
+    "Enugu": {
+      "n": 2,
+      "accuracy": 1.0
+    },
+    "Imo": {
+      "n": 19,
+      "accuracy": 0.789
+    },
+    "Kogi": {
+      "n": 3,
+      "accuracy": 1.0
+    },
+    "Ogun": {
+      "n": 6,
+      "accuracy": 1.0
+    },
+    "Ondo": {
+      "n": 8,
+      "accuracy": 0.5
+    },
+    "Rivers": {
+      "n": 11,
+      "accuracy": 0.727
+    }
+  },
+  "artifact": {
+    "path": "artifacts/models/wetland_rf_geomad2018.joblib",
+    "sha256": "4b8aa2dc63cd8ac67e47a3248c35f46a3fe07c5fced8575ad179832df77b80b3"
+  },
+  "features_sha256": "ded7d4eb6b39ef063b218367dfe21aaaaa53800e0a4592e1eba82640d4ff660f",
+  "deployment_gate": {
+    "rule": "RF held-out macro-F1 >= best baseline + 0.10 and >= 0.60 (pre-registered before results were seen)",
+    "best_baseline_macro_f1": 0.5046,
+    "rf_macro_f1": 0.7258,
+    "passed": true,
+    "note": "Bootstrap CIs are reported alongside; the gate itself uses the point estimate."
+  }
+}

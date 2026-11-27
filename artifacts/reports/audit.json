@@ -1,0 +1,787 @@
+{
+  "generated_at": "2026-11-27T10:02:15+00:00",
+  "boundary": "geoBoundaries-NGA-ADM0.geojson",
+  "results": {
+    "geoboundaries_nga": {
+      "status": "ok",
+      "crs": "EPSG:4326",
+      "adm0_valid": true,
+      "bounds": [
+        2.6926,
+        4.2702,
+        14.678,
+        13.8857
+      ],
+      "area_km2": 912722,
+      "adm1_units": 37,
+      "adm1_names": [
+        "Abia",
+        "Abuja Federal Capital Territory",
+        "Adamawa",
+        "Akwa Ibom",
+        "Anambra",
+        "Bauchi",
+        "Bayelsa",
+        "Benue",
+        "Borno",
+        "Cross River",
+        "Delta",
+        "Ebonyi",
+        "Edo",
+        "Ekiti",
+        "Enugu",
+        "Gombe",
+        "Imo",
+        "Jigawa",
+        "Kaduna",
+        "Kano",
+        "Katsina",
+        "Kebbi",
+        "Kogi",
+        "Kwara",
+        "Lagos",
+        "Nasarawa",
+        "Niger",
+        "Ogun",
+        "Ondo",
+        "Osun",
+        "Oyo",
+        "Plateau",
+        "Rivers",
+        "Sokoto",
+        "Taraba",
+        "Yobe",
+        "Zamfara"
+      ]
+    },
+    "s4a_field": {
+      "status": "ok",
+      "rows_total": 13876,
+      "columns": 55,
+      "nigeria_rows": 1549,
+      "unique_plot_codes": 1549,
+      "points": {
+        "n": 1549,
+        "invalid_coordinates": 0,
+        "inside_nigeria": 1549,
+        "outside_nigeria_valid": 0,
+        "bbox_valid_inside": [
+          2.9145957,
+          4.6626338,
+          12.8754129,
+          13.5056362
+        ]
+      },
+      "X_Y_equal_lon_lat": true,
+      "coordinate_decimals": {
+        "3": 2,
+        "4": 6,
+        "5": 51,
+        "6": 152,
+        "7": 1338
+      },
+      "survey_date_range": [
+        "2022-09-08",
+        "2023-11-29"
+      ],
+      "unparseable_dates": 0,
+      "texture_columns_present": [],
+      "categorical_counts": {
+        "main_land_use": {
+          "Cultivated and managed land (terrestial area)": 1261,
+          "Semi-natural vegetation": 216,
+          "Cultivated aquatic or regularly flooded areas": 72
+        },
+        "bare_soil": {
+          "No": 1466,
+          "Yes": 83
+        },
+        "lndform": {
+          "Level land (Gradient < 10%, relief intensity < 50 m/km)": 1158,
+          "Sloping land (Gradient 10\u201330%, relief intensity 50-150 m/km)": 372,
+          "Steep land (Gradient > 30%, relief intensity > 150 m/km)": 19
+        },
+        "slope_class": {
+          "Flat (0 - 0.5%)": 658,
+          "Very gently sloping (0.5 - 2.0%)": 531,
+          "Gently sloping (2 - 5%)": 217,
+          "Sloping (5 - 10%)": 92,
+          "Strongly sloping (10 - 15%)": 33,
+          "Moderately steep (15 - 30%)": 10,
+          "Steep (30 - 60%)": 6,
+          "Very steep (> 60%)": 2
+        },
+        "depth_restriction_cause": {
+          "nan": 1020,
+          "Strong compaction, cementation or hard clay": 216,
+          "Iron pan or hard plinthite (laterite)": 150,
+          "Dominant coarse fragments (stones, gravel)": 90,
+          "Bedrock": 56,
+          "Pisoplinthites (Fe-Mn concretions)": 9,
+          "No restrictions": 4,
+          "Not known": 2,
+          "Plough pan/Mechanical": 2
+        },
+        "srf_crust": {
+          "No": 1449,
+          "Yes": 54,
+          "nan": 46
+        },
+        "crsfrgab": {
+          "nan": 762,
+          "Very few (0-2%)": 399,
+          "Few (2-5%)": 124,
+          "Common (5-15%)": 109,
+          "Many (15-40%)": 100,
+          "Abundant (40-80%)": 51,
+          "Dominant (> 80%)": 4
+        },
+        "sign_of_erosion": {
+          "No": 1327,
+          "Yes": 205,
+          "nan": 17
+        }
+      },
+      "sites_per_state": {
+        "Bauchi": 151,
+        "Niger": 114,
+        "Taraba": 89,
+        "Kano": 83,
+        "Kaduna": 80,
+        "Jigawa": 72,
+        "Gombe": 72,
+        "Kebbi": 72,
+        "Nasarawa": 66,
+        "Yobe": 66,
+        "Benue": 65,
+        "Oyo": 63,
+        "Kwara": 57,
+        "Plateau": 57,
+        "Kogi": 56,
+        "Sokoto": 55,
+        "Katsina": 46,
+        "Adamawa": 44,
+        "Ogun": 34,
+        "Cross River": 24,
+        "Borno": 24,
+        "Edo": 20,
+        "Abuja Federal Capital Territory": 20,
+        "Enugu": 15,
+        "Ebonyi": 12,
+        "Akwa Ibom": 12,
+        "Rivers": 12,
+        "Ondo": 11,
+        "Anambra": 11,
+        "Abia": 10,
+        "Osun": 10,
+        "Ekiti": 8,
+        "Delta": 7,
+        "Lagos": 4,
+        "Imo": 4,
+        "Zamfara": 3
+      },
+      "eligibility": {
+        "soil_texture_target": "NO \u2014 field file has no sand/silt/clay; lab release not downloadable",
+        "surface_context_display": "YES \u2014 measured field description at plot, survey date shown",
+        "visible_surface_labels": "LIMITED \u2014 bare_soil is Yes/No at plot level only (agricultural sites)"
+      }
+    },
+    "ozoro_texture": {
+      "status": "ok",
+      "file_type": "docx (manuscript)",
+      "tables": [
+        [
+          52,
+          9
+        ],
+        [
+          53,
+          5
+        ],
+        [
+          53,
+          2
+        ]
+      ],
+      "texture_table": {
+        "header": [
+          "Exp.No.",
+          "SandyMl",
+          "ClayMl",
+          "SiltMl",
+          "TotalSoil",
+          "%Sandy",
+          "%Clay",
+          "%Silt",
+          "Soil Type"
+        ],
+        "data_rows": 50,
+        "sum_pct_min": 99.0,
+        "sum_pct_max": 101.0,
+        "rows_not_summing_to_100": 0,
+        "mean_sand_clay_silt_pct": [
+          75.9,
+          11.8,
+          12.3
+        ],
+        "classes": {
+          "Sandy loam": 20,
+          "Loamy sand": 13,
+          "Sand": 10,
+          "Sandy clay loam": 4,
+          "Sandy clay": 2,
+          "Sandy Clay loam": 1
+        }
+      },
+      "coordinate_mentions": [],
+      "eligibility": {
+        "soil_texture_target": "NO \u2014 50 aggregated 'experiment' rows (not 750 samples), no coordinates, jar-test method; cannot be georeferenced",
+        "context_display": "YES \u2014 area-level summary for Ozoro (Isoko North LGA), cite as such"
+      }
+    },
+    "wetland_south_ng": {
+      "status": "ok",
+      "files_present": [
+        "GroundControlPoint.cpg",
+        "GroundControlPoint.prj",
+        "GroundControlPoint.sbn",
+        "GroundControlPoint.sbx",
+        "GroundControlPoint.shp",
+        "GroundControlPoint.shp.xml",
+        "GroundControlPoint.shx",
+        "Ground_control_points_1.xlsx",
+        "Wetlandmap.cpg",
+        "Wetlandmap.dbf",
+        "Wetlandmap.prj",
+        "Wetlandmap.sbn",
+        "Wetlandmap.sbx",
+        "Wetlandmap.shp.xml",
+        "Wetlandmap.shx",
+        "Wetlandmap.tfw",
+        "Wetlandmap.tif.aux.xml",
+        "Wetlandmap.tif.vat.cpg"
+      ],
+      "wetland_map_raster_present": false,
+      "wetland_map_vector_geometry_present": false,
+      "gcp_shapefile_attributes_present": false,
+      "wetlandmap_tfw_pixel_deg": 0.0004491576,
+      "wetlandmap_tfw_pixel_m_approx": 50.0,
+      "gcp_rows": 1051,
+      "gcp_classes": {
+        "Forest": 206,
+        "Built up/bare land": 151,
+        "Mangrove": 141,
+        "Deep water": 135,
+        "Swamp": 130,
+        "Cultivated land": 124,
+        "Shallow water": 95,
+        "Marsh": 69
+      },
+      "gcp_points": {
+        "n": 1051,
+        "invalid_coordinates": 0,
+        "inside_nigeria": 1033,
+        "outside_nigeria_valid": 18,
+        "bbox_valid_inside": [
+          2.71,
+          4.2996,
+          9.3202,
+          7.4286
+        ]
+      },
+      "gcp_coordinate_decimals": {
+        "1": 2,
+        "2": 14,
+        "3": 79,
+        "4": 956
+      },
+      "gcp_low_precision_lt3_decimals": 16,
+      "gcp_duplicate_coordinates": 1,
+      "gcp_observation_date": "not recorded in file",
+      "eligibility": {
+        "wetland_map_display": "NO \u2014 map raster/vector geometry absent from the archive",
+        "wetland_classifier_labels": "CANDIDATE \u2014 ~1k labelled points, 8 classes; no dates; need date-matched imagery (DE Africa S2/S1) and spatial-block splits; drop invalid/low-precision points"
+      }
+    },
+    "eo4forest_lagos_ogun": {
+      "status": "ok",
+      "crs_samples": "EPSG:32631",
+      "training_points": 155902,
+      "validation_points": 20472,
+      "stated_in_record": {
+        "training": 112000,
+        "validation": 11900
+      },
+      "training_class_counts": {
+        "tree cover": 67123,
+        "urbanized": 23287,
+        "grassland": 19051,
+        "cropland": 15858,
+        "water": 15409,
+        "soil": 15127
+      },
+      "validation_class_counts": {
+        "tree cover": 5744,
+        "urbanized": 4330,
+        "soil": 3073,
+        "grassland": 2994,
+        "water": 2139,
+        "cropland": 2131,
+        "5": 1
+      },
+      "validation_points_geo": {
+        "n": 20472,
+        "invalid_coordinates": 0,
+        "inside_nigeria": 20350,
+        "outside_nigeria_valid": 122,
+        "bbox_valid_inside": [
+          2.7026351946089635,
+          6.304132024731915,
+          4.605037393158019,
+          7.949127637977328
+        ]
+      },
+      "val_to_nearest_train_m": {
+        "p05": 23.9,
+        "median": 212.4,
+        "p95": 806.6,
+        "share_lt_100m": 0.274,
+        "exact_coordinate_overlap": 0
+      },
+      "legend": [
+        "0 25 227 35 0 No data",
+        "1 117 168 255 255 Water",
+        "2 254 95 103 255 Urbanized",
+        "3 150 134 112 255 Soil",
+        "4 255 228 126 255 Cropland",
+        "5 68 225 144 255 Grasland",
+        "6 46 149 68 255 Forest"
+      ],
+      "published_accuracy": {
+        "Accuracy_2015-12_.txt": {
+          "overall_accuracy": 0.7004,
+          "f1_class3_soil": 0.5725
+        },
+        "Accuracy_2019-01_.txt": {
+          "overall_accuracy": 0.7627,
+          "f1_class3_soil": 0.6369
+        },
+        "Accuracy_2022-12.txt": {
+          "overall_accuracy": 0.8598,
+          "f1_class3_soil": 0.8528
+        },
+        "Accuracy_2022_01.txt": {
+          "overall_accuracy": null,
+          "f1_class3_soil": null
+        },
+        "Accuracy_2023-12.txt": {
+          "overall_accuracy": 0.7944,
+          "f1_class3_soil": 0.7282
+        }
+      },
+      "maps_extracted": {
+        "AOI0_2023-12.tif": {
+          "crs": "EPSG:32631",
+          "res": [
+            20.0,
+            20.0
+          ],
+          "shape": [
+            9106,
+            10580
+          ],
+          "dtype": "float64",
+          "nodata": null
+        }
+      },
+      "eligibility": {
+        "land_cover_display": "YES \u2014 published map, 20 m, label as 'EO4Forest RF classification (year)'",
+        "visible_surface_labels": "CANDIDATE \u2014 photo-interpreted classes; 'Soil' = bare ground, NOT sand",
+        "independent_accuracy": "NO \u2014 published validation points sit close to training points (see val_to_nearest_train_m); scores are optimistic, not independent"
+      }
+    },
+    "hadejia_flood": {
+      "status": "ok",
+      "study_area": {
+        "crs": "EPSG:32632",
+        "area_km2": 47.54,
+        "adm2": [
+          "Hadejia"
+        ],
+        "adm1": [
+          "Jigawa"
+        ],
+        "centroid_inside_nigeria": true
+      },
+      "rasters": {
+        "Flood_Extent_Layers_RF_S1_and_PS/2020/Combined_Flood_Extent_PS_S1_2020.tif": {
+          "crs": "EPSG:32632",
+          "res_m": [
+            3.0,
+            3.0
+          ],
+          "shape": [
+            2847,
+            2835
+          ],
+          "dtype": "float32",
+          "nodata": 0.0
+        },
+        "Flood_Extent_Layers_RF_S1_and_PS/2022/Combined_Flood_Extent_PS_S1_2022.tif": {
+          "crs": "EPSG:32632",
+          "res_m": [
+            3.0,
+            3.0
+          ],
+          "shape": [
+            2895,
+            2848
+          ],
+          "dtype": "float32",
+          "nodata": 0.0
+        },
+        "Flood_Frequency_Layers/Flood_Frequency_PS_S1_Combine_2020_Mask_Cropland.tif": {
+          "crs": "EPSG:32632",
+          "res_m": [
+            3.0,
+            3.0
+          ],
+          "shape": [
+            2815,
+            2834
+          ],
+          "dtype": "float32",
+          "nodata": -9999.0
+        },
+        "Flood_Frequency_Layers/Flood_Frequency_PS_S1_Combine_2022_Mask_Cropland.tif": {
+          "crs": "EPSG:32632",
+          "res_m": [
+            3.0,
+            3.0
+          ],
+          "shape": [
+            2877,
+            2846
+          ],
+          "dtype": "float32",
+          "nodata": -9999.0
+        },
+        "Perm_Water_Layer/Permanenet_Water_2022.tif": {
+          "crs": "EPSG:32632",
+          "res_m": [
+            3.0,
+            3.0
+          ],
+          "shape": [
+            1860,
+            2732
+          ],
+          "dtype": "float32",
+          "nodata": -9999.0
+        },
+        "Land_Cover_Layers/Land_Cover_Layer_2022.tif": {
+          "crs": "EPSG:32632",
+          "res_m": [
+            3.0,
+            3.0
+          ],
+          "shape": [
+            2895,
+            2848
+          ],
+          "dtype": "float32",
+          "nodata": 0.0
+        }
+      },
+      "per_date_flood_layers": [
+        "PS_20200925_flood_layer.tif",
+        "PS_20201004_flood_layer.tif",
+        "PS_20201012_flood_layer.tif",
+        "PS_20201028_flood_layer.tif",
+        "PS_20220807_flood_layer.tif",
+        "PS_20220920_flood_layer.tif",
+        "PS_20220926_flood_layer.tif",
+        "PS_20220928_flood_layer.tif",
+        "PS_20221001_flood_layer.tif",
+        "PS_20221008_flood_layer.tif",
+        "PS_20221018_flood_layer.tif",
+        "PS_20221028_flood_layer.tif",
+        "S1_20200814_flood_layer.tif",
+        "S1_20200826_flood_layer.tif",
+        "S1_20200907_flood_layer.tif",
+        "S1_20200919_flood_layer.tif",
+        "S1_20201001_flood_layer.tif",
+        "S1_20201013_flood_layer.tif",
+        "S1_20201025_flood_layer.tif",
+        "S1_20220804_flood_layer.tif",
+        "S1_20220816_flood_layer.tif",
+        "S1_20220828_flood_layer.tif",
+        "S1_20220909_flood_layer.tif"
+      ],
+      "testing_points": {
+        "Flood_2020_Random_Testing_Points.shp": {
+          "n": 300,
+          "label_field": "MNDWI_Valu",
+          "counts": {
+            "1": 158,
+            "0": 142
+          }
+        },
+        "Flood_2022_Random_Testing_Points.shp": {
+          "n": 300,
+          "label_field": "MNDWI_Valu",
+          "counts": {
+            "1": 187,
+            "0": 113
+          }
+        }
+      },
+      "survey_rows_released": 5,
+      "survey_note": "Th survey/participatory mapping data contains just a few samples because it is been used for another research work. The full survey data may be made available upon request from the corresponding author.",
+      "eligibility": {
+        "flood_extent_history_display": "YES \u2014 2020/2022 event extents, dated per scene, 3 m, Hadejia LGA only (~48 km2)",
+        "independent_flood_evaluation": "PARTIAL \u2014 300 test points/year labelled from Sentinel-2 MNDWI maps (a different sensor than the S1/PlanetScope extents) \u2014 sensor-independent but still EO-derived, not field truth",
+        "participatory_truth": "NO \u2014 only 5 survey responses released"
+      }
+    },
+    "geotech_ibadan": {
+      "status": "ok",
+      "sheets": [
+        "undisturbed"
+      ],
+      "rows": 41,
+      "pits": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8",
+        "P9"
+      ],
+      "columns": [
+        "Sample Locations",
+        "NMC (%)",
+        "Gs",
+        "LL",
+        "PL",
+        "PI",
+        "LI",
+        "FL",
+        "TI",
+        "G",
+        "CS",
+        "MS",
+        "FS",
+        "F",
+        "OMC%",
+        "MDD (kN/m3)",
+        "Consistency limit",
+        "Grain size",
+        "Cohesion (kPa)",
+        "Angle of Friction (\u00b0)",
+        "Coefficient of Compressibilty Mp ",
+        "Preconsolidation Pressure",
+        "Compression Index",
+        "Swelling Index",
+        "Recompression Index",
+        "Coefficient of Compressibilty ",
+        "Settlement ",
+        "Permeability",
+        "Normal Stress"
+      ],
+      "coordinates_present": false,
+      "cbr_present": false,
+      "eligibility": {
+        "model_training": "NO \u2014 9 pits, no coordinates, no outcomes",
+        "context_display": "LIMITED \u2014 Ibadan-area engineering ranges only, cannot be mapped to a point"
+      }
+    },
+    "hydrobasins_af": {
+      "lev06": {
+        "status": "ok",
+        "crs": "EPSG:4326",
+        "africa_basins": 3597,
+        "basins_intersecting_nigeria": 147,
+        "fields": [
+          "HYBAS_ID",
+          "NEXT_DOWN",
+          "NEXT_SINK",
+          "MAIN_BAS",
+          "DIST_SINK",
+          "DIST_MAIN",
+          "SUB_AREA",
+          "UP_AREA",
+          "PFAF_ID",
+          "ENDO",
+          "COAST",
+          "ORDER",
+          "SORT"
+        ],
+        "hybas_id_unique": true,
+        "next_down_resolves": true
+      },
+      "lev08": {
+        "status": "ok",
+        "crs": "EPSG:4326",
+        "africa_basins": 41372,
+        "basins_intersecting_nigeria": 1387,
+        "fields": [
+          "HYBAS_ID",
+          "NEXT_DOWN",
+          "NEXT_SINK",
+          "MAIN_BAS",
+          "DIST_SINK",
+          "DIST_MAIN",
+          "SUB_AREA",
+          "UP_AREA",
+          "PFAF_ID",
+          "ENDO",
+          "COAST",
+          "ORDER",
+          "SORT"
+        ],
+        "hybas_id_unique": true,
+        "next_down_resolves": true
+      },
+      "eligibility": {
+        "basin_identity": "YES \u2014 verified IDs + topology (NEXT_DOWN); drainage units, NOT wetlands"
+      }
+    },
+    "deafrica_wofs": {
+      "status": "ok",
+      "tiles_intersecting_nigeria": 131,
+      "tiles_present": 131,
+      "period": [
+        "1984-01-01T00:00:00.000000Z",
+        "2025-12-31T23:59:59.999999Z"
+      ],
+      "product_version": "1.0.0",
+      "processed": "2026-02-04T11:21:11Z",
+      "raster": {
+        "crs": "EPSG:6933",
+        "res": [
+          30.0,
+          30.0
+        ],
+        "dtype": "int16",
+        "nodata": -999.0,
+        "shape": [
+          3200,
+          3200
+        ]
+      },
+      "hazard_rule_min_wet_observations": 2,
+      "eligibility": {
+        "historical_water_frequency": "YES \u2014 national 30 m coverage, dated 1984-2025, quality via count_clear",
+        "live_flood": "NO \u2014 historical summary only"
+      }
+    },
+    "soilgrids": {
+      "status": "ok",
+      "layers_expected": 72,
+      "layers_with_genuine_zeros": {
+        "silt_0-5cm_Q0.05.tif": 6650,
+        "silt_5-15cm_Q0.05.tif": 7358,
+        "silt_15-30cm_Q0.05.tif": 24054,
+        "silt_30-60cm_Q0.05.tif": 55837,
+        "silt_60-100cm_Q0.05.tif": 57071,
+        "silt_100-200cm_Q0.05.tif": 48437,
+        "clay_15-30cm_Q0.05.tif": 1
+      },
+      "layers_needing_mask_review": [],
+      "retrieval_counts": {
+        "wcs": 65,
+        "vrt": 7
+      },
+      "layers_present": 72,
+      "raster": {
+        "crs_name": "Interrupted_Goode_Homolosine",
+        "res_m": [
+          250.0,
+          250.0
+        ],
+        "dtype": "int16",
+        "nodata": -32768.0,
+        "shape": [
+          4282,
+          5502
+        ],
+        "tags": {
+          "Code_version": "v2.0.0",
+          "mapped_unit": "g/kg",
+          "Model": "Quantile Regression Forests",
+          "WoSIS_version": "Data stream 7"
+        }
+      },
+      "composition_check_by_depth": {
+        "0-5cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "5-15cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "15-30cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "30-60cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "60-100cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "100-200cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        }
+      },
+      "eligibility": {
+        "modelled_prior_display": "YES \u2014 labelled MODELLED with Q05-Q95 interval, native 250 m",
+        "validation_truth": "NO \u2014 model output; never evaluate against it"
+      }
+    }
+  },
+  "not_audited": {
+    "s4a_lab": "blocked",
+    "isdasoil": "not_yet_audited",
+    "cat_rellis": "not_audited",
+    "ng_agencies": "no_access"
+  }
+}

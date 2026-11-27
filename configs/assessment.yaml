@@ -1,0 +1,14 @@
+# Assessment rules. These are PRECAUTIONARY SCREENING RULES chosen by the project, not
+# calibrated thresholds: no Nigerian outcome data exist to calibrate them. Changing them
+# changes which locations get a historical-hazard flag, never a "safe" verdict.
+
+wofs:
+  # Flag observed_environmental_hazard when water was detected on at least this many
+  # separate clear Landsat observations (1984-2025). Requiring replication avoids flagging
+  # single detections, which are often misclassification. Measured on 3,000 random points
+  # in Nigeria (2026-11-27): >=1 detection 10.2 %, >=2 detections 7.2 %, >=5 detections 5.2 %.
+  min_wet_observations: 2
+
+nearby_points:
+  s4a_max_distance_m: 1000      # Soils4Africa field plots shown only within this radius
+  wetland_gcp_max_distance_m: 250

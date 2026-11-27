@@ -1,0 +1,239 @@
+{
+  "prep_version": "2026.11.27-1",
+  "generated_at": "2026-11-27T09:08:57+00:00",
+  "vectors": {
+    "nga_adm0_display.geojson": {
+      "rows": 1,
+      "note": "simplified 0.005 deg for display only"
+    },
+    "nga_adm1_display.geojson": {
+      "rows": 37,
+      "note": "simplified 0.005 deg for display only"
+    },
+    "s4a_field_nga.parquet": {
+      "rows": 1549,
+      "rejected": 0
+    },
+    "wetland_gcp_south_ng.parquet": {
+      "rows": 1051,
+      "rejected": {
+        "": 1016,
+        "outside_nigeria": 18,
+        "coordinate_precision_lt_3_decimals": 16,
+        "duplicate_coordinate": 1
+      }
+    },
+    "hybas_lev06_nga.parquet": {
+      "rows": 147,
+      "note": "unclipped polygons; topology table keeps upstream context"
+    },
+    "hybas_lev08_nga.parquet": {
+      "rows": 1387,
+      "note": "unclipped polygons; topology table keeps upstream context"
+    },
+    "coverage_outlines.geojson": {
+      "rows": 2
+    }
+  },
+  "rasters": {
+    "eo4forest_landcover_2023-12": {
+      "crs": "EPSG:32631",
+      "res": [
+        20.0,
+        20.0
+      ],
+      "shape": [
+        9106,
+        10580
+      ],
+      "bounds": [
+        466200.0,
+        696980.0,
+        677800.0,
+        879100.0
+      ],
+      "source": "data/raw/eo4forest_lagos_ogun/extracted/ClassificationMaps/AOI0_2023-12.tif",
+      "encoding": "classes"
+    },
+    "hadejia_flood_extent_2020": {
+      "crs": "EPSG:32632",
+      "res": [
+        3.0,
+        3.0
+      ],
+      "shape": [
+        2847,
+        2835
+      ],
+      "bounds": [
+        607999.5,
+        1369390.5,
+        616504.5,
+        1377931.5
+      ],
+      "source": "data/raw/hadejia_flood/extracted/Flood_Extent_Layers_RF_S1_and_PS/2020/Combined_Flood_Extent_PS_S1_2020.tif",
+      "encoding": "binary0"
+    },
+    "hadejia_flood_extent_2022": {
+      "crs": "EPSG:32632",
+      "res": [
+        3.0,
+        3.0
+      ],
+      "shape": [
+        2895,
+        2848
+      ],
+      "bounds": [
+        607996.5,
+        1369387.5,
+        616540.5,
+        1378072.5
+      ],
+      "source": "data/raw/hadejia_flood/extracted/Flood_Extent_Layers_RF_S1_and_PS/2022/Combined_Flood_Extent_PS_S1_2022.tif",
+      "encoding": "binary0"
+    },
+    "hadejia_flood_freq_2020": {
+      "crs": "EPSG:32632",
+      "res": [
+        3.0,
+        3.0
+      ],
+      "shape": [
+        2815,
+        2834
+      ],
+      "bounds": [
+        608001.0,
+        1369392.0,
+        616503.0,
+        1377837.0
+      ],
+      "source": "data/raw/hadejia_flood/extracted/Flood_Frequency_Layers/Flood_Frequency_PS_S1_Combine_2020_Mask_Cropland.tif",
+      "encoding": "frac_n11"
+    },
+    "hadejia_flood_freq_2022": {
+      "crs": "EPSG:32632",
+      "res": [
+        3.0,
+        3.0
+      ],
+      "shape": [
+        2877,
+        2846
+      ],
+      "bounds": [
+        607998.0,
+        1369389.0,
+        616536.0,
+        1378020.0
+      ],
+      "source": "data/raw/hadejia_flood/extracted/Flood_Frequency_Layers/Flood_Frequency_PS_S1_Combine_2022_Mask_Cropland.tif",
+      "encoding": "frac_n12"
+    },
+    "hadejia_perm_water_2022": {
+      "crs": "EPSG:32632",
+      "res": [
+        3.0,
+        3.0
+      ],
+      "shape": [
+        1860,
+        2732
+      ],
+      "bounds": [
+        608254.5300480487,
+        1371048.950163332,
+        616450.5300480487,
+        1376628.950163332
+      ],
+      "source": "data/raw/hadejia_flood/extracted/Perm_Water_Layer/Permanenet_Water_2022.tif",
+      "encoding": "presence"
+    },
+    "hadejia_landcover_2022": {
+      "crs": "EPSG:32632",
+      "res": [
+        3.0,
+        3.0
+      ],
+      "shape": [
+        2895,
+        2848
+      ],
+      "bounds": [
+        607996.5,
+        1369387.5,
+        616540.5,
+        1378072.5
+      ],
+      "source": "data/raw/hadejia_flood/extracted/Land_Cover_Layers/Land_Cover_Layer_2022.tif",
+      "encoding": "classes"
+    }
+  },
+  "files": {
+    "coverage_outlines.geojson": {
+      "sha256": "fe96a024643a02a8b6d34c9dbe9e12c0a324fd81cd25f4ad9df6b7819faf1c81",
+      "bytes": 60205
+    },
+    "eo4forest_landcover_2023-12.tif": {
+      "sha256": "cfb4d274f23b34b471808cb698ee91a3cc9a62e5d2de2b619acd656d6d4f1709",
+      "bytes": 10659305
+    },
+    "hadejia_flood_extent_2020.tif": {
+      "sha256": "49863385275cc851f5ac38fbaa4bf1aa4fbec6f6b6b3e8a60f5f26f91be6ea58",
+      "bytes": 234784
+    },
+    "hadejia_flood_extent_2022.tif": {
+      "sha256": "62b4f54fc399401be344173378bfd05dcb4f456ce395d4b852b56585147764b3",
+      "bytes": 217665
+    },
+    "hadejia_flood_freq_2020.tif": {
+      "sha256": "84d04d44ad327a449ca34a50d5c96a8c82d7de57b763f782146cadd34fd41c78",
+      "bytes": 649596
+    },
+    "hadejia_flood_freq_2022.tif": {
+      "sha256": "3d175c27b7f5e3b16177ebd50164b697275918424c9bf6b0d7387e81824af497",
+      "bytes": 820982
+    },
+    "hadejia_landcover_2022.tif": {
+      "sha256": "4f0d324b006e5229108965696ea7e46a58cbac7ba685c34f71bbef7fec25e29e",
+      "bytes": 505348
+    },
+    "hadejia_perm_water_2022.tif": {
+      "sha256": "b158e0a6fa57fa909fad45f42d82505e732ad883391f2cd54d779b1dd77d362b",
+      "bytes": 24805
+    },
+    "hybas_lev06_af_topology.parquet": {
+      "sha256": "1daac1c8003efbfddddaaf2b3d88646e01e84ee0b6bf3abbd0d21d4fafbfc2f1",
+      "bytes": 169048
+    },
+    "hybas_lev06_nga.parquet": {
+      "sha256": "64bd7c73d9ecf444a7b7337c6d9838c3ac782212b9ccb12a8a603fcaa5f3d5e9",
+      "bytes": 1005847
+    },
+    "hybas_lev08_af_topology.parquet": {
+      "sha256": "703dcb5fb09126bc593d09abaf95bbdac59eeceee8cf262a05e74ac9b24c0b5a",
+      "bytes": 1668898
+    },
+    "hybas_lev08_nga.parquet": {
+      "sha256": "147f89806aaf843847dcf86890aef1dd2026c635009b019b7626d1959c4b054a",
+      "bytes": 2348634
+    },
+    "nga_adm0_display.geojson": {
+      "sha256": "a73f0e0cd84a362b6a41380f84080ad9ad75ca98167646daf0c59ec59473a992",
+      "bytes": 32139
+    },
+    "nga_adm1_display.geojson": {
+      "sha256": "ff1fbcd5af4445c2bb068de23b9645bc24dec28ba655359242a3d4583d08e81e",
+      "bytes": 309353
+    },
+    "s4a_field_nga.parquet": {
+      "sha256": "3ed5585d70f919da04e9539b7214f76475a7e518a29c35ced953c2593bfffa42",
+      "bytes": 186708
+    },
+    "wetland_gcp_south_ng.parquet": {
+      "sha256": "2321124b541de4e3d45909f7c51e4050f09e7df5736ed32d838d03c924b73f4d",
+      "bytes": 44920
+    }
+  }
+}
