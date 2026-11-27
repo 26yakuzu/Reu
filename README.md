@@ -13,7 +13,23 @@ Soil texture, image and trafficability models are **not trained**: no eligible N
 labelled-imagery or outcome data exist. One research model (a wetland/open-water classifier) is trained
 with spatial-block evaluation; see its model card for results and whether it passed its deployment gate.
 
-## Setup
+## Quick start
+
+Needs Python 3.11+ and git. On Windows, use Git Bash or WSL.
+
+```bash
+git clone -b claude/intelligent-pasteur-r7xa7p https://github.com/26yakuzu/Reu.git
+cd Reu
+bash scripts/setup.sh lite     # ~100 MB, ~2 min  (or: full  — ~3 GB, ~1 h, all layers)
+bash scripts/run_app.sh        # dashboard -> http://localhost:8501
+bash scripts/run_app.sh api    # API docs  -> http://127.0.0.1:8000/docs
+```
+
+Tested from a fresh clone: `lite` set up in 77 s; tests 49 passed / 3 skipped (they need full data).
+In `lite` mode the Hadejia flood, national WOfS and SoilGrids layers show as *unavailable*, and the
+app abstains there instead of guessing.
+
+## Setup (manual)
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate

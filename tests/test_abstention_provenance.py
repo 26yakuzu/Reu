@@ -59,6 +59,11 @@ def test_real_points_provenance_and_language():
 
 @needs_processed
 def test_hadejia_flood_point_is_hazard_lagos_abstains():
+    import pytest
+
+    from terrasense.geo.layers import RASTER_LAYERS
+    if not next(l for l in RASTER_LAYERS if l.id == "hadejia_flood_extent_2022").path.exists():
+        pytest.skip("Hadejia layers not installed (lite setup); the point then correctly abstains")
     h = assess(12.4093, 10.0458)
     assert h["assessment_status"] == "observed_environmental_hazard"
     lg = assess(9.06, 7.49)   # central Abuja: no flood/water evidence, no measured soil
