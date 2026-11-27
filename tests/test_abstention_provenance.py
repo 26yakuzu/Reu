@@ -71,3 +71,15 @@ def test_wofs_rule_single_detection_not_flagged():
     two = _r(theme="water_frequency", value=0.004, counts={"wet": WOFS_MIN_WET, "clear": 500}, label="water in 2 of 500")
     assert {e["state"] for e in equipment_panel([one], soil_composition_panel())} == {"insufficient_evidence"}
     assert {e["state"] for e in equipment_panel([two], soil_composition_panel())} == {"observed_environmental_hazard"}
+
+
+def test_model_output_never_triggers_hazard():
+    modelled = _r(theme="wetland_model", value=None, label="open water", observation="2018")
+    eq = equipment_panel([modelled], soil_composition_panel())
+    assert {e["state"] for e in eq} == {"insufficient_evidence"}
+
+
+@needs_processed
+def test_models_off_by_default():
+    res = assess(6.30, 4.93)          # Niger Delta, inside the wetland model domain
+    assert not any(r["layer_id"] == "wetland_rf_geomad2018" for r in res["water_and_wetland"])

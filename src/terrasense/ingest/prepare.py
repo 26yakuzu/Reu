@@ -153,7 +153,8 @@ def prepare_all(skip_rasters: bool = False) -> Path:
                 ras[name] = to_cog(src, dst, mode, nd)
             else:
                 with rasterio.open(dst) as r:
-                    ras[name] = {"crs": str(r.crs), "res": list(r.res), "shape": [r.height, r.width], "bounds": list(r.bounds)}
+                    ras[name] = {"crs": str(r.crs), "res": list(r.res), "shape": [r.height, r.width], "bounds": list(r.bounds),
+                                 "source": str(src.relative_to(RAW_DIR.parent.parent)), "reused_cached_output": True}
             ras[name]["encoding"] = mode
     from terrasense.ingest.wofs import OUT as WOFS_DIR
     if WOFS_DIR.exists() and not skip_rasters:

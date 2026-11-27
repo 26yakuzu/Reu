@@ -18,5 +18,6 @@ for name in ("baseline_majority", "baseline_rule_wofs_mndwi", "random_forest_tes
     for row in m["confusion_matrix"]["rows_true_cols_pred"]:
         print("     ", row)
 print("\nby state:", r["random_forest_test_by_state"])
+print("block-bootstrap 95% CI:", r.get("block_bootstrap_95ci"))
 print("deployment gate:", r["deployment_gate"])
 print("NOTE: test points are spatially held out but come from the same labelling campaign; not externally independent.")

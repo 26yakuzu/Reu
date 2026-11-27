@@ -41,10 +41,44 @@ and `docs/data_dictionary/AUDIT.md`). All numbers below come from that audit of 
 | Flood extent classifier | **Do not train** | The publisher's maps already exist. Re-deriving them adds nothing, and testing against their MNDWI points is only sensor-independent. |
 | Trafficability | **Disabled** | No paired soil/vehicle/outcome data and no expert validation exist. |
 
+## Stage 3 — training actually performed (2026-11-27)
+
+Only one model met the prerequisites: the **wetland / open-water classifier**. The full card is
+`docs/model_cards/wetland_rf_geomad2018.md`.
+
+| item | result |
+|---|---|
+| Data | 1,005 labelled points (of the 1,016 that passed QC), 2018 Sentinel-2 GeoMAD + WOfS features, 27 tiles |
+| Split | 45 held-out 25 km blocks (207 points) with a 2 km leakage buffer; min train–test distance 2.2 km |
+| Majority / rule baseline macro-F1 | 0.197 / 0.505 |
+| Random Forest macro-F1 (held out) | **0.726** (95 % block-bootstrap CI 0.61–0.82) |
+| Improvement over rule | +0.22 (CI +0.10 to +0.31) |
+| Weak class | vegetated wetland F1 0.505 (CI 0.21–0.72); half of true wetlands predicted as "other" |
+| Gate (pre-registered) | passed on the point estimate. The CI lower bound sits at the margin, so the pass is not robust |
+| Deployment | opt-in research layer (`include_models=true`), labelled modelled, never drives hazard flags, refused outside the training domain |
+| Independence | spatially held out, but the same labelling campaign, so **not** an external validation |
+
+**Not trained (unchanged):**
+- soil texture: no measured, georeferenced Nigerian labels;
+- image segmentation: no labelled Nigerian imagery;
+- trafficability: no outcome data.
+
+## Problems found during the work, and fixes
+
+| problem | fix |
+|---|---|
+| SoilGrids VRT extraction through the proxy slowed to ~3 min/layer in parallel | Switched to ISRIC WCS (~40 s/layer); values verified identical to the VRT |
+| WCS encodes nodata as 0 with no tag | Nodata restored from a VRT-extracted mask. Zeros outside the mask were checked against the VRT (5/5 sampled are genuine 0 g/kg) and kept as data; every file is tagged with the counts |
+| SoilGrids has no values in urban cores (Abuja, Lagos Island) | Reported as nodata, never filled; tested; documented in the limitations |
+| GeoMAD feature extraction stalled silently (no HTTP timeout) | GDAL HTTP timeouts, per-tile checkpoints and progress logging added |
+| pandas 3 returns Arrow string arrays that scikit-learn cannot index | Explicit `to_numpy` conversion |
+| Dashboard marker invisible (Leaflet icon path broken in the iframe) | Vector marker; map rendering verified in Chromium |
+
 ## What remains unknown
 
 - Whether and when the Soils4Africa lab texture will be released, and with which methods and depths.
 - The licence text inside the HydroBASINS package (the tech doc PDF is extracted but not yet reviewed).
-- The DE Africa product paths, dates and cloud masks over the wetland control points and the Lagos/Ogun pilot.
+- Real-world (external) accuracy of the wetland model. It needs independently collected, dated wetland observations.
+- Whether the iSDAsoil 30 m and Sentinel-1 radar layers would improve the wetland model, especially for vegetated wetland under cloud.
 - Whether the Leeds wetland map can be obtained from the authors (it is not in the deposit).
 - The Ozoro sampling coordinates (only the authors have them).

@@ -34,6 +34,8 @@ def _bundle():
     b = joblib.load(MODEL)
     b["domain"] = wkt.loads(b["domain_wkt_6933"])
     b["test_macro_f1"] = res["random_forest_test"]["macro_f1"]
+    b["ci"] = res.get("block_bootstrap_95ci", {}).get("rf_macro_f1")
+    b["per_class_f1"] = {k: v["f1-score"] for k, v in res["random_forest_test"]["per_class"].items()}
     return b
 
 
@@ -48,8 +50,11 @@ def wetland_model_reading(lon: float, lat: float) -> Reading | None:
     base = dict(layer_id="wetland_rf_geomad2018", title="Modelled wetland class, 2018 (Random Forest, research)",
                 theme="wetland_model", observation="2018 (Sentinel-2 annual geomedian)", native_resolution_m=10.0,
                 crs="EPSG:6933", source_id="wetland_south_ng", doi="10.5518/1314", licence="CC-BY-4.0",
-                caveats=[f"Model output, held-out macro-F1 {b['test_macro_f1']:.2f} on spatial blocks from the same "
-                         "labelling campaign (not externally independent).",
+                caveats=[f"Model output, held-out macro-F1 {b['test_macro_f1']:.2f} (95% block-bootstrap CI {b['ci']}) on "
+                         "spatial blocks from the same labelling campaign (not externally independent).",
+                         "Per-class held-out F1: " + ", ".join(f"{k} {v:.2f}" for k, v in b["per_class_f1"].items())
+                         + " — vegetated wetland is frequently confused with 'other'.",
+                         "Display only: a modelled class never triggers the observed-hazard state.",
                          "Class probabilities are uncalibrated and are not shown.",
                          "2018 conditions; wetlands change seasonally and between years."])
     x, y = Transformer.from_crs(4326, 6933, always_xy=True).transform(lon, lat)

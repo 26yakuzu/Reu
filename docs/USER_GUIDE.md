@@ -17,8 +17,12 @@ build on, and it never will. It has no live flood information.
      This is a warning, not a forecast. Never drive into floodwater.
    - 🟨 **Preliminary**: some measured evidence exists, but an engineer must review it.
      (This status cannot occur yet, because no measured soil data is available.)
-4. The tabs show each dataset's reading, observation period and resolution, with notes on its limits.
-5. Use **Export** to save a JSON or CSV record of exactly what was shown.
+4. The tabs show each dataset's reading (including WOfS water history for anywhere in Nigeria, and
+   *modelled* SoilGrids sand/silt/clay with ranges), observation period and resolution, with notes on its limits.
+5. Optionally tick **Run research wetland model**. It shows a *modelled* 2018 class (open water /
+   vegetated wetland / other) for southern Nigeria only. It is right about 3 times in 4 on held-out
+   areas, and much less reliable for vegetated wetland. It never changes the status.
+6. Use **Export** to save a JSON or CSV record of exactly what was shown.
 
 **Words to watch**
 

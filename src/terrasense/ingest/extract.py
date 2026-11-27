@@ -32,7 +32,10 @@ def safe_extract(zip_path: Path, dest: Path, suffixes: tuple[str, ...] | None = 
             if suffixes and not m.endswith(suffixes):
                 continue
             target = dest / m
-            if target.exists() and not m.endswith("/") and target.stat().st_size == zf.getinfo(m).file_size:
+            if m.endswith("/"):
+                target.mkdir(parents=True, exist_ok=True)      # directory entry: never counted as a file
+                continue
+            if target.exists() and target.stat().st_size == zf.getinfo(m).file_size:
                 continue
             zf.extract(m, dest)
             out.append(m)

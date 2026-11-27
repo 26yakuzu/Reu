@@ -61,6 +61,8 @@ with st.sidebar:
     show_basins = st.checkbox("HydroBASINS level 6 (drainage basins — not wetlands)", value=False)
     show_s4a = st.checkbox("Soils4Africa field sites (2022–23)", value=False)
     show_gcp = st.checkbox("Wetland study control points", value=False)
+    run_models = st.checkbox("Run research wetland model (2018, ~15 s, needs internet)", value=False,
+                             help="Random Forest, held-out macro-F1 0.73 (95% CI 0.61–0.82); vegetated-wetland F1 only 0.51.")
     photo = st.file_uploader("Optional site photo (not analysed)", type=["jpg", "jpeg", "png"])
 
 # ---------------------------------------------------------------- map
@@ -118,7 +120,7 @@ with col_panel:
     image_meta = {"filename": photo.name, "content_type": photo.type, "bytes": photo.size, "analysed": False} if photo else None
     try:
         with st.spinner("Looking up evidence…"):
-            res = assess(lat, lon, qdate, image_meta)
+            res = assess(lat, lon, qdate, image_meta, include_models=run_models)
     except OutsideNigeria as e:
         st.error(str(e))
         st.stop()

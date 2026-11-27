@@ -28,3 +28,23 @@ def test_presence_and_classes_nodata():
 def test_binary_keeps_values():
     a = np.array([[0.0, 1.0]], dtype=np.float32)
     assert _map_block(a, 0.0, "binary0").tolist() == [[0, 1]]
+
+
+def test_safe_extract_idempotent_and_refuses_traversal(tmp_path):
+    import zipfile
+
+    import pytest
+
+    from terrasense.ingest.extract import safe_extract
+    z = tmp_path / "SYNTHETIC.zip"
+    with zipfile.ZipFile(z, "w") as zf:
+        zf.writestr("dir/", "")
+        zf.writestr("dir/a.txt", "hello")
+    out = tmp_path / "out"
+    assert safe_extract(z, out) == ["dir/a.txt"]        # directory entries are not counted
+    assert safe_extract(z, out) == []                   # second run extracts nothing
+    bad = tmp_path / "SYNTHETIC_bad.zip"
+    with zipfile.ZipFile(bad, "w") as zf:
+        zf.writestr("../evil.txt", "x")
+    with pytest.raises(ValueError):
+        safe_extract(bad, out)

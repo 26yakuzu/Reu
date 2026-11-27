@@ -70,3 +70,14 @@ def test_openapi_has_examples():
     spec = c.get("/openapi.json").json()
     assert "/assess" in spec["paths"]
     assert "examples" in str(spec["components"]["schemas"]["AssessRequest"])
+
+
+def test_models_endpoint_reports_wetland_honestly():
+    m = c.get("/models").json()
+    w = [t for t in m["trained_models"] if t["id"] == "wetland_rf_geomad2018"]
+    if not w:
+        pytest.skip("wetland model not trained in this checkout")
+    w = w[0]
+    assert set(w["classes"]) == {"open_water", "vegetated_wetland", "other"}
+    assert "baseline_rule_wofs_mndwi" in w["baselines_macro_f1"]
+    assert "pre-registered" in w["deployment_gate"]["rule"]

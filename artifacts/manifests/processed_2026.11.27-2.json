@@ -1,6 +1,6 @@
 {
   "prep_version": "2026.11.27-2",
-  "generated_at": "2026-11-27T09:31:01+00:00",
+  "generated_at": "2026-11-27T10:04:09+00:00",
   "vectors": {
     "nga_adm0_display.geojson": {
       "rows": 1,
@@ -53,6 +53,7 @@
         879100.0
       ],
       "source": "data/raw/eo4forest_lagos_ogun/extracted/ClassificationMaps/AOI0_2023-12.tif",
+      "reused_cached_output": true,
       "encoding": "classes"
     },
     "hadejia_flood_extent_2020": {
@@ -72,6 +73,7 @@
         1377931.5
       ],
       "source": "data/raw/hadejia_flood/extracted/Flood_Extent_Layers_RF_S1_and_PS/2020/Combined_Flood_Extent_PS_S1_2020.tif",
+      "reused_cached_output": true,
       "encoding": "binary0"
     },
     "hadejia_flood_extent_2022": {
@@ -91,6 +93,7 @@
         1378072.5
       ],
       "source": "data/raw/hadejia_flood/extracted/Flood_Extent_Layers_RF_S1_and_PS/2022/Combined_Flood_Extent_PS_S1_2022.tif",
+      "reused_cached_output": true,
       "encoding": "binary0"
     },
     "hadejia_flood_freq_2020": {
@@ -110,6 +113,7 @@
         1377837.0
       ],
       "source": "data/raw/hadejia_flood/extracted/Flood_Frequency_Layers/Flood_Frequency_PS_S1_Combine_2020_Mask_Cropland.tif",
+      "reused_cached_output": true,
       "encoding": "frac_n11"
     },
     "hadejia_flood_freq_2022": {
@@ -129,6 +133,7 @@
         1378020.0
       ],
       "source": "data/raw/hadejia_flood/extracted/Flood_Frequency_Layers/Flood_Frequency_PS_S1_Combine_2022_Mask_Cropland.tif",
+      "reused_cached_output": true,
       "encoding": "frac_n12"
     },
     "hadejia_perm_water_2022": {
@@ -148,6 +153,7 @@
         1376628.950163332
       ],
       "source": "data/raw/hadejia_flood/extracted/Perm_Water_Layer/Permanenet_Water_2022.tif",
+      "reused_cached_output": true,
       "encoding": "presence"
     },
     "hadejia_landcover_2022": {
@@ -167,6 +173,7 @@
         1378072.5
       ],
       "source": "data/raw/hadejia_flood/extracted/Land_Cover_Layers/Land_Cover_Layer_2022.tif",
+      "reused_cached_output": true,
       "encoding": "classes"
     },
     "wofs_maxfreq_display": {

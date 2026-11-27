@@ -1,6 +1,6 @@
 # Dataset audit (generated)
 
-Generated `2026-11-27T09:52:34+00:00` by `python -I scripts/audit.py`. Boundary: `geoBoundaries-NGA-ADM0.geojson`.
+Generated `2026-11-27T10:02:15+00:00` by `python -I scripts/audit.py`. Boundary: `geoBoundaries-NGA-ADM0.geojson`.
 Every value below was computed from files in `data/raw/`; none is copied from the project brief.
 
 ## `geoboundaries_nga`

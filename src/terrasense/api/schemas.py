@@ -14,6 +14,8 @@ class AssessRequest(BaseModel):
     lat: float = Field(..., ge=-90, le=90, description="WGS84 latitude", examples=[12.4093])
     lon: float = Field(..., ge=-180, le=180, description="WGS84 longitude", examples=[10.0458])
     date: _dt.date | None = Field(None, description="Optional date of interest (ISO 8601). Must not be in the future.")
+    include_models: bool = Field(False, description="Also run research models (wetland RF; needs network, ~15 s). "
+                                                    "Model outputs are labelled modelled and never drive hazard flags.")
 
     @field_validator("date")
     @classmethod

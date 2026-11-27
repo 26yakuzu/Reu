@@ -23,9 +23,9 @@ MAX_IMAGE_BYTES = 10 * 1024 * 1024
 MAGIC = {b"\xff\xd8\xff": "image/jpeg", b"\x89PNG\r\n\x1a\n": "image/png"}
 
 
-def _run(lat: float, lon: float, d: date | None, image_meta: dict | None = None) -> dict:
+def _run(lat: float, lon: float, d: date | None, image_meta: dict | None = None, include_models: bool = False) -> dict:
     try:
-        return assess(lat, lon, d, image_meta)
+        return assess(lat, lon, d, image_meta, include_models)
     except OutsideNigeria as e:
         raise HTTPException(status_code=422, detail=str(e))
     except BoundaryUnavailable as e:
@@ -71,7 +71,7 @@ def models():
 
 @app.post("/assess", response_model=AssessResponse)
 def assess_json(req: AssessRequest):
-    return _run(req.lat, req.lon, req.date)
+    return _run(req.lat, req.lon, req.date, include_models=req.include_models)
 
 
 @app.post("/assess/image", response_model=AssessResponse)

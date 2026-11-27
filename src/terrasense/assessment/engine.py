@@ -107,11 +107,15 @@ def equipment_panel(readings: list[Reading], soil: dict) -> list[dict]:
     return out
 
 
-def assess(lat: float, lon: float, query_date: date | None = None, image_meta: dict | None = None) -> dict:
+def assess(lat: float, lon: float, query_date: date | None = None, image_meta: dict | None = None,
+           include_models: bool = False) -> dict:
     state = validate_point(lat, lon)
     readings = all_readings(lon, lat)
-    from terrasense.models.wetland_infer import wetland_model_reading
-    wm = wetland_model_reading(lon, lat)       # None unless the model passed its deployment gate
+    # Research model: opt-in (needs network, ~15 s); None unless it passed its deployment gate
+    wm = None
+    if include_models:
+        from terrasense.models.wetland_infer import wetland_model_reading
+        wm = wetland_model_reading(lon, lat)
     if wm is not None:
         readings.append(wm)                    # display only: a modelled class is never an OBSERVED hazard
     soil = soil_composition_panel(lon, lat)
