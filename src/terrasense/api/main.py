@@ -52,12 +52,20 @@ def sources():
 def models():
     p = ARTIFACTS_DIR / "models" / "registry.json"
     trained = json.loads(p.read_text()) if p.exists() else []
+    from terrasense.models.wetland_infer import enabled as wetland_enabled
+    rp = ARTIFACTS_DIR / "reports" / "wetland_rf_results.json"
+    if rp.exists():
+        r = json.loads(rp.read_text())
+        trained.append({"id": "wetland_rf_geomad2018", "type": "RandomForestClassifier", "classes": r["classes"],
+                        "test_macro_f1": r["random_forest_test"]["macro_f1"],
+                        "baselines_macro_f1": {k: r[k]["macro_f1"] for k in ("baseline_majority", "baseline_rule_wofs_mndwi")},
+                        "deployment_gate": r["deployment_gate"], "served_by_api": wetland_enabled(),
+                        "model_card": "docs/model_cards/wetland_rf_geomad2018.md"})
     return {"trained_models": trained,
             "trafficability_model_enabled": TRAFFICABILITY_MODEL_ENABLED,
             "not_trained": {
                 "soil_texture_regressor": "blocked: no measured, georeferenced Nigerian sand/silt/clay available",
                 "surface_segmentation": "blocked: no Nigerian labelled imagery with independent test sites ingested",
-                "wetland_classifier": "pending: wetland control points exist but date-matched imagery not yet ingested",
                 "trafficability": "disabled: no paired soil/vehicle/outcome data or expert validation"}}
 
 

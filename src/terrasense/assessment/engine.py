@@ -16,8 +16,9 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 
 from terrasense import __version__
+from terrasense.config import load_assessment_rules
 from terrasense.geo.boundary import nigeria
-from terrasense.geo.layers import Reading, all_readings, current_dir
+from terrasense.geo.layers import Reading, all_readings, current_dir, soilgrids_profile
 
 EQUIPMENT = {
     "passenger_car": "Ordinary passenger car",
@@ -27,6 +28,7 @@ EQUIPMENT = {
 }
 STATES = ("not_assessed", "insufficient_evidence", "observed_environmental_hazard", "preliminary_requires_expert_review")
 TRAFFICABILITY_MODEL_ENABLED = False
+WOFS_MIN_WET = int(load_assessment_rules()["wofs"]["min_wet_observations"])
 
 FLOODWATER_WARNING = ("Never drive into or through floodwater. Historical maps cannot show current water depth, "
                       "current flow or road condition.")
@@ -55,6 +57,8 @@ def _hazards(readings: list[Reading]) -> list[str]:
             out.append(f"{r.title}: {r.label} [{r.observation}]")
         if r.theme == "water" and r.value == 1:
             out.append(f"{r.title}: {r.label} [{r.observation}]")
+        if r.theme == "water_frequency" and r.counts and r.counts["wet"] >= WOFS_MIN_WET:
+            out.append(f"{r.title}: {r.label} [{r.observation}]")
         if r.theme == "visible_surface" and r.label and r.label.startswith("Water"):
             out.append(f"{r.title}: mapped as water [{r.observation}]")
         if r.theme == "wetland_label" and r.label and any(k in r.label.lower() for k in ("water", "swamp", "marsh", "mangrove")):
@@ -62,21 +66,30 @@ def _hazards(readings: list[Reading]) -> list[str]:
     return out
 
 
-def soil_composition_panel() -> dict:
-    return {"status": "unavailable",
+def soil_composition_panel(lon: float | None = None, lat: float | None = None) -> dict:
+    """Measured texture (none available) is kept strictly apart from modelled SoilGrids values."""
+    modelled = soilgrids_profile(lon, lat) if lon is not None else {"status": "unavailable", "depths": []}
+    return {"status": "modelled_only" if modelled["status"] == "value" else "unavailable",
+            # top-level percentages are reserved for MEASURED values at the point — always None for now
             "sand_pct": None, "silt_pct": None, "clay_pct": None, "depth_cm": None, "interval": None,
-            "reason": ("No eligible measured, georeferenced sand/silt/clay data for Nigeria is available to this "
-                       "project: Soils4Africa lab results are not downloadable; the Ozoro dataset has no coordinates "
-                       "(50 aggregated rows, jar test). Modelled SoilGrids/iSDAsoil layers are not yet ingested."),
-            "next_step": "Ingest SoilGrids 250 m (modelled, with Q05/Q95) as a clearly-labelled prior."}
+            "measured": {"status": "unavailable",
+                         "reason": ("No eligible measured, georeferenced sand/silt/clay data for Nigeria is available "
+                                    "to this project: Soils4Africa lab results are not downloadable; the Ozoro dataset "
+                                    "has no coordinates (50 aggregated rows, jar test).")},
+            "modelled": modelled,
+            "reason": ("Measured texture unavailable. " + ("Modelled SoilGrids 250 m values are shown separately; they "
+                       "are predictions, not measurements, and do not change the equipment screening."
+                       if modelled["status"] == "value" else "Modelled SoilGrids layers are not available for this point.")),
+            "next_step": "Measured texture requires laboratory analysis of samples from the site."}
 
 
 def equipment_panel(readings: list[Reading], soil: dict) -> list[dict]:
     hazards = _hazards(readings)
-    measured_soil = soil["status"] == "value"
+    measured_soil = soil.get("measured", {}).get("status") == "value"
     gaps = []
     if not measured_soil:
-        gaps.append("no measured soil texture/strength at this location")
+        gaps.append("no measured soil texture/strength at this location"
+                    + (" (only modelled SoilGrids 250 m texture)" if soil.get("modelled", {}).get("status") == "value" else ""))
     gaps += ["no current (live) water or flood observation", "no slope/DEM layer ingested",
              "no validated vehicle–terrain outcome data (trafficability model disabled)"]
     out = []
@@ -97,7 +110,11 @@ def equipment_panel(readings: list[Reading], soil: dict) -> list[dict]:
 def assess(lat: float, lon: float, query_date: date | None = None, image_meta: dict | None = None) -> dict:
     state = validate_point(lat, lon)
     readings = all_readings(lon, lat)
-    soil = soil_composition_panel()
+    from terrasense.models.wetland_infer import wetland_model_reading
+    wm = wetland_model_reading(lon, lat)       # None unless the model passed its deployment gate
+    if wm is not None:
+        readings.append(wm)                    # display only: a modelled class is never an OBSERVED hazard
+    soil = soil_composition_panel(lon, lat)
     equipment = equipment_panel(readings, soil)
     warnings = [DISCLAIMER]
     if query_date:
@@ -119,7 +136,7 @@ def assess(lat: float, lon: float, query_date: date | None = None, image_meta: d
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "software_version": __version__, "data_version": current_dir().name,
         "visible_terrain": [r.as_dict() for r in readings if r.theme == "visible_surface"],
-        "water_and_wetland": [r.as_dict() for r in readings if r.theme in ("flood_history", "water", "wetland_label")],
+        "water_and_wetland": [r.as_dict() for r in readings if r.theme in ("flood_history", "water", "water_frequency", "wetland_label", "wetland_model")],
         "basin": [r.as_dict() for r in readings if r.theme == "basin"],
         "field_observations": [r.as_dict() for r in readings if r.theme == "field_observation"],
         "soil_composition": soil,

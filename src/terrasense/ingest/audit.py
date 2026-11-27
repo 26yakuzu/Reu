@@ -258,6 +258,64 @@ def audit_hydrobasins(b: Boundary) -> dict:
     return out
 
 
+def audit_wofs(b: Boundary) -> dict:
+    from terrasense.ingest.wofs import OUT, nigeria_tiles
+    tiles = nigeria_tiles()
+    have = [t for t in tiles if (OUT / f"x{t[0]:03d}y{t[1]:03d}").exists()]
+    if not have:
+        return _missing("deafrica_wofs", [str(OUT)])
+    stac = json.loads(next((OUT / f"x{have[0][0]:03d}y{have[0][1]:03d}").glob("*.stac-item.json")).read_text())["properties"]
+    f = next((OUT / f"x{have[0][0]:03d}y{have[0][1]:03d}").glob("*_count_clear.tif"))
+    with rasterio.open(f) as r:
+        meta = {"crs": str(r.crs), "res": r.res, "dtype": r.dtypes[0], "nodata": r.nodata, "shape": r.shape}
+    rules = __import__("terrasense.config", fromlist=["x"]).load_assessment_rules()["wofs"]
+    return {"status": "ok", "tiles_intersecting_nigeria": len(tiles), "tiles_present": len(have),
+            "period": [stac["dtr:start_datetime"], stac["dtr:end_datetime"]], "product_version": stac["odc:dataset_version"],
+            "processed": stac["odc:processing_datetime"], "raster": meta,
+            "hazard_rule_min_wet_observations": rules["min_wet_observations"],
+            "eligibility": {"historical_water_frequency": "YES — national 30 m coverage, dated 1984-2025, quality via count_clear",
+                            "live_flood": "NO — historical summary only"}}
+
+
+def audit_soilgrids(b: Boundary) -> dict:
+    from terrasense.ingest.soilgrids import DEPTHS, OUT, PROPS, STATS
+    expected = [f"{p}_{d}_{s}.tif" for p in PROPS for d in DEPTHS for s in STATS]
+    present = [n for n in expected if (OUT / n).exists()]
+    if not present:
+        return _missing("soilgrids", [str(OUT)])
+    with rasterio.open(OUT / present[0]) as r:
+        meta = {"crs_name": r.crs.to_wkt().split('"')[1], "res_m": r.res, "dtype": r.dtypes[0], "nodata": r.nodata,
+                "shape": r.shape, "tags": {k: v for k, v in r.tags().items() if k in ("Model", "Code_version", "WoSIS_version", "mapped_unit")}}
+    # compositional check on a sample of in-Nigeria pixels for complete depth/mean triplets
+    checks = {}
+    rng = np.random.default_rng(0)
+    minx, miny, maxx, maxy = b.geometry.bounds
+    lon = rng.uniform(minx, maxx, 4000)
+    lat = rng.uniform(miny, maxy, 4000)
+    keep = b.contains(lon, lat)
+    lon, lat = lon[keep][:1000], lat[keep][:1000]
+    from pyproj import Transformer
+    for d in DEPTHS:
+        names = [f"{p}_{d}_mean.tif" for p in PROPS]
+        if not all((OUT / n).exists() for n in names):
+            continue
+        sums = None
+        for n in names:
+            with rasterio.open(OUT / n) as r:
+                x, y = Transformer.from_crs(4326, r.crs, always_xy=True).transform(lon, lat)
+                v = np.array([s[0] for s in r.sample(zip(x, y))], dtype=float)
+                v[v == r.nodata] = np.nan
+                sums = v if sums is None else sums + v
+        sums = sums / 10
+        ok = ~np.isnan(sums)
+        checks[d] = {"n": int(ok.sum()), "sum_of_means_pct_p01_p50_p99": [round(float(q), 1) for q in np.percentile(sums[ok], [1, 50, 99])],
+                     "nodata_share": round(float(1 - ok.mean()), 3)}
+    return {"status": "ok" if len(present) == len(expected) else "partial", "layers_expected": len(expected),
+            "layers_present": len(present), "raster": meta, "composition_check_by_depth": checks,
+            "eligibility": {"modelled_prior_display": "YES — labelled MODELLED with Q05-Q95 interval, native 250 m",
+                            "validation_truth": "NO — model output; never evaluate against it"}}
+
+
 AUDITORS = {
     "geoboundaries_nga": lambda b: audit_boundary(),
     "s4a_field": audit_s4a_field,
@@ -267,6 +325,8 @@ AUDITORS = {
     "hadejia_flood": audit_hadejia,
     "geotech_ibadan": lambda b: audit_geotech(),
     "hydrobasins_af": audit_hydrobasins,
+    "deafrica_wofs": audit_wofs,
+    "soilgrids": audit_soilgrids,
 }
 
 

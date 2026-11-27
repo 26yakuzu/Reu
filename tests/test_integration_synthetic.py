@@ -26,6 +26,10 @@ def synthetic(tmp_path, monkeypatch):
                        dtype="uint8", crs="EPSG:32632", transform=from_origin(550_000, 996_000, 30, 30), nodata=255) as ds:
         ds.write(arr, 1)
     syn_boundary = Boundary(box(5.0, 8.0, 10.0, 10.0), None, source="SYNTHETIC_square")
+    import terrasense.config as cfg
+    import terrasense.ingest.wofs as wofs
+    monkeypatch.setattr(cfg, "RAW_DIR", tmp_path / "SYNTHETIC_raw")       # no real SoilGrids
+    monkeypatch.setattr(wofs, "OUT", tmp_path / "SYNTHETIC_raw" / "wofs")  # no real WOfS
     monkeypatch.setattr(layers, "current_dir", lambda: d)
     monkeypatch.setattr(engine, "current_dir", lambda: d)
     monkeypatch.setattr(engine, "nigeria", lambda: syn_boundary)
@@ -53,6 +57,8 @@ def test_synthetic_end_to_end(synthetic):
     # files that were not created are reported as unavailable, never filled
     assert "hadejia_flood_extent_2020" in w["data_quality"]["layers_unavailable"]
     assert "hybas_lev06" in w["data_quality"]["layers_unavailable"]
+    assert "deafrica_wofs_alltime" in w["data_quality"]["layers_unavailable"]
+    assert w["soil_composition"]["status"] == "unavailable" and w["soil_composition"]["modelled"]["depths"] == []
     far = engine.assess(9.9, 9.9)
     assert {r["status"] for r in far["water_and_wetland"]} <= {"outside_coverage", "unavailable"}
 

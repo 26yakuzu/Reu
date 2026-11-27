@@ -30,3 +30,9 @@ def source_by_id(source_id: str) -> dict:
         if s["id"] == source_id:
             return s
     raise KeyError(source_id)
+
+
+@lru_cache(maxsize=1)
+def load_assessment_rules(path: Path = REPO_ROOT / "configs" / "assessment.yaml") -> dict:
+    with open(path, encoding="utf-8") as fh:
+        return yaml.safe_load(fh)

@@ -1,6 +1,6 @@
 # Dataset audit (generated)
 
-Generated `2026-11-27T09:16:23+00:00` by `python -I scripts/audit.py`. Boundary: `geoBoundaries-NGA-ADM0.geojson`.
+Generated `2026-11-27T09:32:02+00:00` by `python -I scripts/audit.py`. Boundary: `geoBoundaries-NGA-ADM0.geojson`.
 Every value below was computed from files in `data/raw/`; none is copied from the project brief.
 
 ## `geoboundaries_nga`
@@ -157,11 +157,41 @@ Every value below was computed from files in `data/raw/`; none is copied from th
 
 - **basin_identity**: YES — verified IDs + topology (NEXT_DOWN); drainage units, NOT wetlands
 
+## `deafrica_wofs`
+
+| field | value |
+|---|---|
+| status | `ok` |
+| tiles_intersecting_nigeria | `131` |
+| tiles_present | `131` |
+| period | `["1984-01-01T00:00:00.000000Z", "2025-12-31T23:59:59.999999Z"]` |
+| product_version | `1.0.0` |
+| processed | `2026-02-04T11:21:11Z` |
+| raster | `{"crs": "EPSG:6933", "res": [30.0, 30.0], "dtype": "int16", "nodata": -999.0, "shape": [3200, 3200]}` |
+| hazard_rule_min_wet_observations | `2` |
+
+**Eligibility by role**
+
+- **historical_water_frequency**: YES — national 30 m coverage, dated 1984-2025, quality via count_clear
+- **live_flood**: NO — historical summary only
+
+## `soilgrids`
+
+| field | value |
+|---|---|
+| status | `partial` |
+| layers_expected | `72` |
+| layers_present | `6` |
+| raster | `{"crs_name": "Interrupted_Goode_Homolosine", "res_m": [250.0, 250.0], "dtype": "int16", "nodata": -32768.0, "shape": [4282, 5502], "tags": {"Code_version": "v2.0.0", "mapped_unit": "g/kg", "Model": "Quantile Regression Forests", "WoSIS_version": "Data stream 7"}}` |
+
+**Eligibility by role**
+
+- **modelled_prior_display**: YES — labelled MODELLED with Q05-Q95 interval, native 250 m
+- **validation_truth**: NO — model output; never evaluate against it
+
 ## Registered but not audited
 
 - `s4a_lab`: blocked
-- `soilgrids`: not_audited
 - `isdasoil`: not_yet_audited
-- `deafrica_wofs`: not_yet_audited
 - `cat_rellis`: not_audited
 - `ng_agencies`: no_access

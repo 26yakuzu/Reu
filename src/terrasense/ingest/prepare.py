@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,7 +23,7 @@ from rasterio.windows import Window
 from terrasense.config import MANIFEST_DIR, PROCESSED_DIR, RAW_DIR
 from terrasense.geo.boundary import nigeria
 
-PREP_VERSION = "2026.11.27-1"
+PREP_VERSION = "2026.11.27-2"
 
 H = RAW_DIR / "hadejia_flood" / "extracted"
 E = RAW_DIR / "eo4forest_lagos_ogun" / "extracted"
@@ -154,6 +155,9 @@ def prepare_all(skip_rasters: bool = False) -> Path:
                 with rasterio.open(dst) as r:
                     ras[name] = {"crs": str(r.crs), "res": list(r.res), "shape": [r.height, r.width], "bounds": list(r.bounds)}
             ras[name]["encoding"] = mode
+    from terrasense.ingest.wofs import OUT as WOFS_DIR
+    if WOFS_DIR.exists() and not skip_rasters:
+        ras["wofs_maxfreq_display"] = build_wofs_display(out)
     files = {p.name: {"sha256": sha256(p), "bytes": p.stat().st_size} for p in sorted(out.iterdir()) if p.is_file()}
     manifest = {"prep_version": PREP_VERSION, "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 "vectors": vec, "rasters": ras, "files": files}
@@ -162,3 +166,48 @@ def prepare_all(skip_rasters: bool = False) -> Path:
     mp.write_text(json.dumps(manifest, indent=2, default=str))
     (PROCESSED_DIR / "CURRENT").write_text(PREP_VERSION)
     return mp
+
+
+def build_wofs_display(out: Path, block: int = 16) -> dict:
+    """Display-only mosaic: max WOfS frequency (%) in 16x16-pixel blocks (480 m), EPSG:6933.
+
+    Max (not mean) keeps narrow rivers visible. NEVER used for point values.
+    """
+    from terrasense.ingest.wofs import OUT as WOFS_DIR, TILE_M, nigeria_tiles, tile_bounds, PRODUCT, PERIOD
+    tiles = nigeria_tiles()
+    if not tiles:
+        return {"status": "no_tiles"}
+    xs = [tile_bounds(*t) for t in tiles]
+    left, bottom = min(b[0] for b in xs), min(b[1] for b in xs)
+    right, top = max(b[2] for b in xs), max(b[3] for b in xs)
+    res = 30 * block
+    W, Hh = int((right - left) / res), int((top - bottom) / res)
+    mos = np.full((Hh, W), 255, np.uint8)
+    n = 0
+    for ix, iy in tiles:
+        stem = WOFS_DIR / f"x{ix:03d}y{iy:03d}" / f"{PRODUCT}_x{ix:03d}y{iy:03d}_{PERIOD}"
+        pw, pc = Path(f"{stem}_count_wet.tif"), Path(f"{stem}_count_clear.tif")
+        if not (pw.exists() and pc.exists()):
+            continue
+        with rasterio.open(pw) as a, rasterio.open(pc) as b:
+            wet, clear = a.read(1).astype(np.float32), b.read(1).astype(np.float32)
+        valid = (clear > 0) & (wet >= 0)
+        f = np.where(valid, wet / np.where(clear > 0, clear, 1), np.nan)
+        k = f.shape[0] // block
+        blk = f[:k * block, :k * block].reshape(k, block, k, block)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)   # all-NaN blocks are expected (no clear obs)
+            mx = np.nanmax(blk, axis=(1, 3))
+        cell = np.where(np.isnan(mx), 255, np.rint(mx * 100)).astype(np.uint8)
+        tl, _, _, tt = tile_bounds(ix, iy)
+        c0, r0 = int((tl - left) / res), int((top - tt) / res)
+        mos[r0:r0 + k, c0:c0 + k] = cell
+        n += 1
+    dst = out / "wofs_maxfreq_display.tif"
+    with rasterio.open(dst, "w", driver="GTiff", height=Hh, width=W, count=1, dtype="uint8", crs="EPSG:6933",
+                       transform=rasterio.transform.from_origin(left, top, res, res), nodata=255,
+                       compress="deflate", tiled=True) as ds:
+        ds.write(mos, 1)
+        ds.update_tags(purpose="display only; block max of WOfS frequency (%), 480 m",
+                       source="deafrica wofs_ls_summary_alltime 1-0-0 1984--P42Y")
+    return {"tiles_used": n, "res_m": res, "shape": [Hh, W], "note": "display only"}

@@ -34,23 +34,52 @@ def _palette(layer_id: str):
     return None
 
 
+def _ramp(t: np.ndarray, lo: tuple, hi: tuple) -> np.ndarray:
+    t = np.clip(t, 0, 1)[..., None]
+    return (np.array(lo) * (1 - t) + np.array(hi) * t).astype(np.uint8)
+
+
+def _extra_path(layer_id: str):
+    from terrasense.config import RAW_DIR
+    from terrasense.geo.layers import current_dir
+    return {"wofs_maxfreq_display": current_dir() / "wofs_maxfreq_display.tif",
+            "soilgrids_sand_0-5cm_Q0.5": RAW_DIR / "soilgrids" / "sand_0-5cm_Q0.5.tif",
+            "soilgrids_clay_0-5cm_Q0.5": RAW_DIR / "soilgrids" / "clay_0-5cm_Q0.5.tif"}.get(layer_id)
+
+
+EXTRA_LAYERS = {"wofs_maxfreq_display": "WOfS water frequency 1984–2025 (display, 480 m block max)",
+                "soilgrids_sand_0-5cm_Q0.5": "SoilGrids sand 0–5 cm, median (MODELLED, 250 m)",
+                "soilgrids_clay_0-5cm_Q0.5": "SoilGrids clay 0–5 cm, median (MODELLED, 250 m)"}
+
+
 @lru_cache(maxsize=16)
 def overlay(layer_id: str, max_px: int = 1400):
     """Return (png_bytes, [[south, west], [north, east]]) or None."""
-    layer = next(l for l in RASTER_LAYERS if l.id == layer_id)
-    if not layer.path.exists():
+    layer = next((l for l in RASTER_LAYERS if l.id == layer_id), None)
+    path = layer.path if layer else _extra_path(layer_id)
+    if path is None or not path.exists():
         return None
-    with rasterio.open(layer.path) as src:
+    with rasterio.open(path) as src:
         scale = max(src.width, src.height) / max_px
         w, h = max(1, int(src.width / max(scale, 1))), max(1, int(src.height / max(scale, 1)))
         tr, tw, th = calculate_default_transform(src.crs, "EPSG:3857", src.width, src.height, *src.bounds, dst_width=w, dst_height=h)
-        dst = np.full((th, tw), src.nodata if src.nodata is not None else 0, dtype=np.uint8)
+        dtype = np.int16 if src.dtypes[0] == "int16" else np.uint8
+        dst = np.full((th, tw), src.nodata if src.nodata is not None else 0, dtype=dtype)
         reproject(rasterio.band(src, 1), dst, dst_transform=tr, dst_crs="EPSG:3857", resampling=Resampling.nearest,
                   dst_nodata=src.nodata)
         nodata = src.nodata
     rgba = np.zeros((*dst.shape, 4), dtype=np.uint8)
-    pal = _palette(layer_id)
-    if pal:
+    pal = _palette(layer_id) if layer else None
+    if layer_id == "wofs_maxfreq_display":
+        m = (dst != 255) & (dst > 0)
+        rgba[..., :3] = _ramp(dst / 100.0, (170, 220, 255), (8, 48, 160))
+        rgba[..., 3] = np.where(m, 210, 0)
+    elif layer_id.startswith("soilgrids_"):
+        m = dst != nodata
+        rgba[..., :3] = _ramp(dst / 1000.0, (250, 240, 200), (140, 70, 20)) if "sand" in layer_id else \
+            _ramp(dst / 600.0, (240, 240, 250), (120, 40, 120))
+        rgba[..., 3] = np.where(m, 170, 0)
+    elif pal:
         for v, rgb in pal.items():
             m = dst == v
             rgba[m, :3] = rgb

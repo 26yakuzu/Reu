@@ -25,8 +25,10 @@ and `docs/data_dictionary/AUDIT.md`). All numbers below come from that audit of 
 | **Geotechnical, Ibadan** (Mendeley cts2jkgvrw v2, CC BY 4.0) | CBR / strength / density | 9 pits and 41 sample rows, with Atterberg limits, grain size, OMC/MDD, cohesion/friction, consolidation and permeability. **No coordinates and no CBR.** No vehicle outcomes. | Engineering background only. Not mappable, not trainable. |
 | **HydroBASINS v1c** | basins | Levels 6 and 8: IDs are unique and every `NEXT_DOWN` resolves within Africa. 147 (L6) and 1,387 (L8) basins intersect Nigeria. | Basin identity and topology. |
 | **geoBoundaries NGA** | authoritative boundary | gbOpen ADM0/ADM1 from GRID3 (year represented 2022), CC BY 4.0. Valid geometry, 37 ADM1 units. | Nigeria filter (point-in-polygon, never a bbox). |
-| SoilGrids 250 m | covariate | Server reachable. **Not yet ingested.** | Planned modelled prior (units g/kg; Q05/Q50/Q95). |
-| iSDAsoil, DE Africa WOfS / S1 / S2 | covariates | **Not audited yet.** | — |
+| **SoilGrids 2.0** (CC BY 4.0, confirmed on docs.isric.org) | covariate | Ingested. Sand/silt/clay × 6 depths × mean/Q05/Q50/Q95 (72 layers), on the native 250 m Homolosine grid over Nigeria. Retrieved by WCS: values are identical to the ISRIC VRTs where both have data, and nodata was restored from a VRT-extracted mask (mismatch counts are tagged in every file). int16 g/kg. | Modelled prior shown separately from measured texture. Never used as evidence or truth. |
+| **DE Africa WOfS all-time** (CC BY 4.0, confirmed in the DE Africa spec) | water history | Ingested. All 131 tiles touching Nigeria, v1.0.0, 1984-01-01 → 2025-12-31, 30 m, EPSG:6933; all 393 files match the publisher's SHA-1. Of 3,000 random points in Nigeria, 10.2 % had ≥1 water detection, 7.2 % ≥2 and 5.2 % ≥5; 3.8 % had no clear observation. | National historical water frequency. Hazard flag at ≥2 detections (precautionary rule, `configs/assessment.yaml`). |
+| **DE Africa GeoMAD Sentinel-2 annual** (CC BY 4.0) | imagery features | The 2018 composite (the wetland study's map year) is read remotely: 10 m, uint16 reflectance ×10⁴, plus EMAD/SMAD/BCMAD. | Features for the wetland classifier. |
+| iSDAsoil, Sentinel-1 | covariates | **Not audited yet.** | — |
 | NIHSA, NiMet, NASRDA, NGSA, IITA, FMW | candidates | No public machine-readable access verified. | Formal data requests needed. |
 
 ## Consequences for training (Stage 3 decision, made before any training)
@@ -35,7 +37,7 @@ and `docs/data_dictionary/AUDIT.md`). All numbers below come from that audit of 
 |---|---|---|
 | Sand/silt/clay regression | **Do not train** | No measured, georeferenced Nigerian texture is available: S4A lab data can't be downloaded and Ozoro has no coordinates. Training on SoilGrids/iSDA outputs and calling it accuracy would be circular. |
 | Visible-surface segmentation (image model) | **Do not train** | No Nigerian labelled *imagery* (image chips with masks) is available, only point labels on maps. |
-| Wetland / water classifier | **Possible next step** | 1,016 cleaned control points could work once date-matched Sentinel-2/1 features are ingested from DE Africa. That needs spatial-block splits (`terrasense.models.splits`), a baseline (majority class, plus an MNDWI threshold), then a Random Forest. The undated labels are a known weakness. |
+| Wetland / water classifier | **Trained (Stage 3)** | See the Stage 3 section below and `docs/model_cards/wetland_rf_geomad2018.md`. |
 | Flood extent classifier | **Do not train** | The publisher's maps already exist. Re-deriving them adds nothing, and testing against their MNDWI points is only sensor-independent. |
 | Trafficability | **Disabled** | No paired soil/vehicle/outcome data and no expert validation exist. |
 

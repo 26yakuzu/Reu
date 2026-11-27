@@ -61,6 +61,13 @@ def test_real_points_provenance_and_language():
 def test_hadejia_flood_point_is_hazard_lagos_abstains():
     h = assess(12.4093, 10.0458)
     assert h["assessment_status"] == "observed_environmental_hazard"
-    lg = assess(9.08, 7.40)   # Abuja: no local layers beyond basin
-    assert lg["assessment_status"] == "abstain_insufficient_evidence"
-    assert lg["data_quality"]["any_local_evidence_beyond_basin"] is False
+    lg = assess(9.06, 7.49)   # central Abuja: no flood/water evidence, no measured soil
+    assert lg["assessment_status"] == "abstain_insufficient_evidence", lg["equipment_screening"][0]["observed_hazards"]
+
+
+def test_wofs_rule_single_detection_not_flagged():
+    from terrasense.assessment.engine import WOFS_MIN_WET
+    one = _r(theme="water_frequency", value=0.002, counts={"wet": 1, "clear": 500}, label="water in 1 of 500")
+    two = _r(theme="water_frequency", value=0.004, counts={"wet": WOFS_MIN_WET, "clear": 500}, label="water in 2 of 500")
+    assert {e["state"] for e in equipment_panel([one], soil_composition_panel())} == {"insufficient_evidence"}
+    assert {e["state"] for e in equipment_panel([two], soil_composition_panel())} == {"observed_environmental_hazard"}

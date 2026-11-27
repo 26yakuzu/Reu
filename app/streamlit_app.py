@@ -15,7 +15,7 @@ import geopandas as gpd
 import pandas as pd
 import streamlit as st
 from folium.plugins import MarkerCluster
-from render import overlay
+from render import EXTRA_LAYERS, overlay
 from streamlit_folium import st_folium
 
 from terrasense.assessment.engine import DISCLAIMER, OutsideNigeria, assess
@@ -57,6 +57,7 @@ with st.sidebar:
     st.header("Map layers")
     show = {l.id: st.checkbox(l.title, value=l.id in ("hadejia_flood_extent_2022", "eo4forest_landcover_2023-12"))
             for l in RASTER_LAYERS}
+    show.update({k: st.checkbox(v, value=False) for k, v in EXTRA_LAYERS.items()})
     show_basins = st.checkbox("HydroBASINS level 6 (drainage basins — not wetlands)", value=False)
     show_s4a = st.checkbox("Soils4Africa field sites (2022–23)", value=False)
     show_gcp = st.checkbox("Wetland study control points", value=False)
@@ -147,14 +148,32 @@ with col_panel:
                 st.markdown("**Evidence gaps**\n" + "\n".join(f"- {g}" for g in e["evidence_gaps"]))
     with tabs[1]:
         table(res["water_and_wetland"])
-        st.caption("Flood extents are past events (2020, 2022) for Hadejia LGA only. No live flood data. Depth unknown.")
+        st.caption("WOfS: share of cloud-free Landsat observations (1984–2025) classified as water, 30 m. Hadejia flood "
+                   "extents: 2020/2022 events, Hadejia LGA only. Nothing here is live; depth is unknown.")
     with tabs[2]:
         table(res["visible_terrain"])
         table(res["field_observations"])
         st.caption("'Soil' / 'Bare soil' map classes mean exposed ground surface, not sand.")
     with tabs[3]:
         s = res["soil_composition"]
-        st.markdown(f"**Sand / silt / clay:** unavailable\n\n{s['reason']}\n\n*Next step:* {s['next_step']}")
+        st.markdown(f"**Measured sand / silt / clay at this point:** unavailable — {s['measured']['reason']}")
+        mod = s["modelled"]
+        if mod["status"] == "value":
+            st.markdown("**Modelled (SoilGrids 2.0, 250 m) — predictions, not measurements.** "
+                        "Values in %; brackets show the model's 5th–95th percentile.")
+            rows = []
+            for d in mod["depths"]:
+                if d["status"] != "value":
+                    rows.append({"depth": d["depth"], "sand %": d["status"], "silt %": "", "clay %": "", "Σ means": ""})
+                    continue
+                fmt = lambda q: f"{q['mean']:.0f} [{q['Q0.05']:.0f}–{q['Q0.95']:.0f}]"
+                rows.append({"depth": d["depth"], "sand %": fmt(d["sand"]), "silt %": fmt(d["silt"]),
+                             "clay %": fmt(d["clay"]), "Σ means": d["sum_of_means_pct"]})
+            st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+            st.caption(" ".join(mod["caveats"]))
+        else:
+            st.markdown(f"Modelled SoilGrids values: {mod['status']}.")
+        st.caption(s["next_step"])
     with tabs[4]:
         table(res["basin"])
     with tabs[5]:

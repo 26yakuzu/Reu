@@ -7,18 +7,25 @@ driving or safety certification.
 (Dec 2023), Soils4Africa field visits (2022–23) and the wetland study (map year 2018). No layer
 describes conditions today.
 
-**Narrow coverage.** Wall-to-wall local layers exist for only two areas:
+**Narrow coverage for detailed layers.** Nationally the app has WOfS water frequency (30 m) and modelled
+SoilGrids texture (250 m). Detailed local layers exist for only two areas:
 - Lagos/Ogun: EO4Forest, 20 m.
 - Hadejia LGA (~48 km²): flood, water and land cover, 3 m.
 
-Everywhere else in Nigeria, the app has only:
+Everywhere else in Nigeria, the only other evidence is:
 - the drainage basin;
 - a Soils4Africa field site, if one lies within 1 km.
 
-**No soil composition.** No measured, georeferenced sand/silt/clay data for Nigeria is available to this
-project (see the gap report). The app returns *unavailable*; it never estimates. Modelled products
-(SoilGrids, iSDAsoil) are not ingested yet. When they are, they will be labelled as modelled, at native
-resolution, with intervals.
+**No measured soil composition.** No measured, georeferenced sand/silt/clay data for Nigeria is available
+to this project (see the gap report), so measured texture is always *unavailable*. SoilGrids 2.0 (250 m)
+values are shown separately as **modelled predictions** with their 5–95 % interval. They never count as
+evidence in the equipment screening, and their local accuracy in Nigeria is unknown (WoSIS training
+profiles are sparse there).
+
+**WOfS water frequency.** National 30 m coverage, but historical (1984–2025) and derived from a classifier.
+A hazard flag needs at least 2 wet detections. That threshold is a precautionary choice recorded in
+`configs/assessment.yaml`, not a calibrated one. Persistent cloud in the south lowers clear-observation
+counts, and isolated detections there are often noise.
 
 **Map classes are not texture.** The "Soil" (EO4Forest) and "Bare soil" (Hadejia) classes mean exposed
 ground surface. They do not mean sand.

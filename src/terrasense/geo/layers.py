@@ -89,6 +89,7 @@ class Reading:
     measured: bool = False
     historical: bool = True
     distance_m: float | None = None
+    counts: dict | None = None
     caveats: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict:
@@ -152,8 +153,10 @@ def _nearest(gdf: gpd.GeoDataFrame, lon: float, lat: float, max_m: float):
     return (cand.loc[i], float(dist.loc[i])) if dist.loc[i] <= max_m else (None, None)
 
 
-S4A_MAX_M = 1000.0
-GCP_MAX_M = 250.0
+from terrasense.config import load_assessment_rules  # noqa: E402
+
+S4A_MAX_M = float(load_assessment_rules()["nearby_points"]["s4a_max_distance_m"])
+GCP_MAX_M = float(load_assessment_rules()["nearby_points"]["wetland_gcp_max_distance_m"])
 
 
 def nearest_s4a(lon: float, lat: float) -> Reading:
@@ -216,4 +219,104 @@ def basin_lookup(lon: float, lat: float) -> list[Reading]:
 
 
 def all_readings(lon: float, lat: float) -> list[Reading]:
-    return [sample_raster(l, lon, lat) for l in RASTER_LAYERS] + [nearest_s4a(lon, lat), nearest_wetland_gcp(lon, lat)] + basin_lookup(lon, lat)
+    return ([sample_raster(l, lon, lat) for l in RASTER_LAYERS] + [wofs_reading(lon, lat)]
+            + [nearest_s4a(lon, lat), nearest_wetland_gcp(lon, lat)] + basin_lookup(lon, lat))
+
+
+# ---------------------------------------------------------------- SoilGrids (modelled prior)
+
+SG_DIR_NAME = "soilgrids"
+SG_DEPTHS = ("0-5cm", "5-15cm", "15-30cm", "30-60cm", "60-100cm", "100-200cm")
+SG_STATS = ("mean", "Q0.05", "Q0.5", "Q0.95")
+SG_PROPS = ("sand", "silt", "clay")
+
+
+def _sg_path(prop: str, depth: str, stat: str) -> Path:
+    from terrasense.config import RAW_DIR
+    return RAW_DIR / SG_DIR_NAME / f"{prop}_{depth}_{stat}.tif"
+
+
+def soilgrids_profile(lon: float, lat: float) -> dict:
+    """Modelled sand/silt/clay (%) per depth with 90% prediction interval. Never measured truth."""
+    base = {"source_id": "soilgrids", "kind": "modelled", "native_resolution_m": 250.0,
+            "crs": "Interrupted Goode Homolosine (ISRIC)", "model": "Quantile Regression Forest (SoilGrids 2.0)",
+            "units": "percent (source g/kg ÷ 10)", **_prov("soilgrids"),
+            "caveats": ["Modelled prediction at 250 m, not a measurement at this point.",
+                        "Interval is the model's 5th–95th percentile, not a measured range.",
+                        "Each statistic is predicted independently, so means need not sum to exactly 100 %.",
+                        "Training data (WoSIS) are sparse in Nigeria; local accuracy is unknown."]}
+    if not _sg_path("sand", "0-5cm", "Q0.5").exists():
+        return {"status": "unavailable", "depths": [], **base}
+    depths = []
+    for depth in SG_DEPTHS:
+        row = {"depth": depth}
+        complete = True
+        for prop in SG_PROPS:
+            vals = {}
+            for stat in SG_STATS:
+                p = _sg_path(prop, depth, stat)
+                if not p.exists():
+                    complete = False
+                    continue
+                ds = _open(str(p))
+                x, y = _sg_tx(ds).transform(lon, lat)
+                b = ds.bounds
+                if not (b.left <= x < b.right and b.bottom < y <= b.top):
+                    complete = False
+                    continue
+                r, c = ds.index(x, y)
+                v = int(ds.read(1, window=((r, r + 1), (c, c + 1)))[0, 0])
+                vals[stat] = None if v == ds.nodata else round(v / 10, 1)
+            row[prop] = vals
+        if not complete:
+            row["status"] = "incomplete"
+        elif any(v is None for p in SG_PROPS for v in row[p].values()):
+            row["status"] = "nodata"
+        else:
+            row["status"] = "value"
+            row["sum_of_means_pct"] = round(sum(row[p]["mean"] for p in SG_PROPS), 1)
+        depths.append(row)
+    status = "value" if any(d["status"] == "value" for d in depths) else "nodata"
+    return {"status": status, "depths": depths, **base}
+
+
+@lru_cache(maxsize=4)
+def _sg_tx_cached(wkt: str):
+    return Transformer.from_crs("EPSG:4326", wkt, always_xy=True)
+
+
+def _sg_tx(ds):
+    return _sg_tx_cached(ds.crs.to_wkt())
+
+
+# ---------------------------------------------------------------- DE Africa WOfS all-time summary
+
+WOFS_PERIOD = "1984-01-01 to 2025-12-31 (Landsat 5/7/8/9)"
+
+
+def wofs_reading(lon: float, lat: float) -> Reading:
+    from terrasense.config import RAW_DIR
+    from terrasense.ingest.wofs import OUT, PERIOD, PRODUCT, tile_of
+    base = dict(layer_id="deafrica_wofs_alltime", title="DE Africa WOfS all-time water observation frequency",
+                theme="water_frequency", observation=WOFS_PERIOD, native_resolution_m=30.0, crs="EPSG:6933",
+                **_prov("deafrica_wofs"),
+                caveats=["Fraction of cloud-free Landsat observations classified as water — historical, not current.",
+                         "Single detections can be misclassification (cloud shadow, terrain shadow, dark surfaces).",
+                         "Says nothing about depth, flow or ground bearing capacity."])
+    x, y = _tx("EPSG:6933").transform(lon, lat)
+    ix, iy = tile_of(x, y)
+    stem = OUT / f"x{ix:03d}y{iy:03d}" / f"{PRODUCT}_x{ix:03d}y{iy:03d}_{PERIOD}"
+    pw, pc = Path(f"{stem}_count_wet.tif"), Path(f"{stem}_count_clear.tif")
+    if not (pw.exists() and pc.exists()):
+        return Reading(status="unavailable", **base)
+    vals = []
+    for p in (pw, pc):
+        ds = _open(str(p))
+        r, c = ds.index(x, y)
+        v = int(ds.read(1, window=((r, r + 1), (c, c + 1)))[0, 0])
+        vals.append(None if (ds.nodata is not None and v == ds.nodata) else v)
+    wet, clear = vals
+    if wet is None or clear is None or clear == 0:
+        return Reading(status="nodata", label=f"no clear observations (clear={clear})", **base)
+    return Reading(status="value", value=round(wet / clear, 4), counts={"wet": wet, "clear": clear},
+                   label=f"water in {wet} of {clear} clear observations ({100 * wet / clear:.1f} %)", **base)

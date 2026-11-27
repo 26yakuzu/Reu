@@ -17,5 +17,15 @@ files in `data/processed/<version>/`.
 | `nga_adm{0,1}_display.geojson` | EPSG:4326 | polygon | simplified for display only; analysis uses the raw polygon | geoboundaries_nga |
 | `coverage_outlines.geojson` | EPSG:4326 | polygon | EO4Forest AOI, Hadejia study area | eo4forest / hadejia |
 
+| `wofs_maxfreq_display.tif` | EPSG:6933 | 480 m | uint8: max WOfS frequency (%) within 16×16 30 m pixels; 255 nodata. **Display only** | deafrica_wofs |
+
+## Raw layers read directly (already in native, compressed, checksummed form)
+
+| path | CRS | resolution | values | source |
+|---|---|---|---|---|
+| `data/raw/deafrica_wofs/x###y###/*_count_wet.tif`, `*_count_clear.tif` | EPSG:6933 | 30 m | int16 counts of wet / clear Landsat observations 1984–2025; nodata −999. Frequency = wet / clear (DE Africa definition); clear = 0 → nodata | deafrica_wofs (131 tiles, publisher sha1 verified) |
+| `data/raw/soilgrids/{sand,silt,clay}_{depth}_{mean,Q0.05,Q0.5,Q0.95}.tif` | Interrupted Goode Homolosine | 250 m | int16 g/kg (÷10 → %); nodata −32768. Depths 0–5, 5–15, 15–30, 30–60, 60–100, 100–200 cm. **Modelled** | soilgrids |
+| `data/processed/features/wetland_gcp_features_geomad2018.parquet` | — | point (3×3 px median at 10 m) | GeoMAD 2018 bands B02–B12 (reflectance ×10⁴), EMAD/SMAD/BCMAD, COUNT, NDVI/MNDWI/NDWI/NDMI, WOfS freq/clear, plus labels | wetland_south_ng + DE Africa gm_s2_annual |
+
 Units: areas in km², distances in metres, computed in the local UTM zone (31N–33N).
 SoilGrids units, when ingested, are g/kg; divide by 10 for %.

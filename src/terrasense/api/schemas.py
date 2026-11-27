@@ -46,6 +46,7 @@ class ReadingOut(BaseModel):
     measured: bool
     historical: bool
     distance_m: float | None = None
+    counts: dict | None = None
     caveats: list[str]
 
 
@@ -60,12 +61,14 @@ class EquipmentOut(BaseModel):
 
 
 class SoilOut(BaseModel):
-    status: Literal["value", "unavailable"]
-    sand_pct: float | None
-    silt_pct: float | None
-    clay_pct: float | None
-    depth_cm: str | None
-    interval: str | None
+    status: Literal["modelled_only", "unavailable"]
+    sand_pct: None = Field(None, description="Reserved for MEASURED values at the point; none are available")
+    silt_pct: None = None
+    clay_pct: None = None
+    depth_cm: None = None
+    interval: None = None
+    measured: dict
+    modelled: dict = Field(..., description="SoilGrids 2.0 modelled sand/silt/clay (%) per depth, mean and Q05/Q50/Q95")
     reason: str
     next_step: str
 
