@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T09:32:02+00:00",
+  "generated_at": "2026-11-27T09:52:34+00:00",
   "boundary": "geoBoundaries-NGA-ADM0.geojson",
   "results": {
     "geoboundaries_nga": {
@@ -680,9 +680,23 @@
       }
     },
     "soilgrids": {
-      "status": "partial",
+      "status": "ok",
       "layers_expected": 72,
-      "layers_present": 6,
+      "layers_with_genuine_zeros": {
+        "silt_0-5cm_Q0.05.tif": 6650,
+        "silt_5-15cm_Q0.05.tif": 7358,
+        "silt_15-30cm_Q0.05.tif": 24054,
+        "silt_30-60cm_Q0.05.tif": 55837,
+        "silt_60-100cm_Q0.05.tif": 57071,
+        "silt_100-200cm_Q0.05.tif": 48437,
+        "clay_15-30cm_Q0.05.tif": 1
+      },
+      "layers_needing_mask_review": [],
+      "retrieval_counts": {
+        "wcs": 65,
+        "vrt": 7
+      },
+      "layers_present": 72,
       "raster": {
         "crs_name": "Interrupted_Goode_Homolosine",
         "res_m": [
@@ -702,7 +716,62 @@
           "WoSIS_version": "Data stream 7"
         }
       },
-      "composition_check_by_depth": {},
+      "composition_check_by_depth": {
+        "0-5cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "5-15cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "15-30cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "30-60cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "60-100cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        },
+        "100-200cm": {
+          "n": 981,
+          "sum_of_means_pct_p01_p50_p99": [
+            99.9,
+            100.0,
+            100.1
+          ],
+          "nodata_share": 0.019
+        }
+      },
       "eligibility": {
         "modelled_prior_display": "YES \u2014 labelled MODELLED with Q05-Q95 interval, native 250 m",
         "validation_truth": "NO \u2014 model output; never evaluate against it"

@@ -85,8 +85,22 @@ def test_tile_index_matches_publisher_stac():
 @pytest.mark.skipif(len(list((RAW_DIR / "soilgrids").glob("*.tif"))) < 72 if (RAW_DIR / "soilgrids").exists() else True,
                     reason="SoilGrids not fully fetched (72 layers)")
 def test_real_soilgrids_values_plausible():
-    prof = layers.soilgrids_profile(7.49, 9.06)  # Abuja
-    d = next(x for x in prof["depths"] if x["status"] == "value")
-    for p in ("sand", "silt", "clay"):
-        q = d[p]
-        assert 0 <= q["Q0.05"] <= q["Q0.5"] <= q["Q0.95"] <= 100
+    for lon, lat in [(8.30, 8.70), (8.80, 11.60)]:          # rural Nasarawa, rural Kano
+        prof = layers.soilgrids_profile(lon, lat)
+        assert prof["status"] == "value"
+        for d in prof["depths"]:
+            assert d["status"] == "value"
+            assert 99 <= d["sum_of_means_pct"] <= 101         # compositional check
+            for p in ("sand", "silt", "clay"):
+                q = d[p]
+                assert 0 <= q["Q0.05"] <= q["Q0.5"] <= q["Q0.95"] <= 100
+
+
+@pytest.mark.skipif(len(list((RAW_DIR / "soilgrids").glob("*.tif"))) < 72 if (RAW_DIR / "soilgrids").exists() else True,
+                    reason="SoilGrids not fully fetched (72 layers)")
+def test_real_soilgrids_urban_is_nodata_not_filled():
+    # SoilGrids 2.0 leaves urban cores unpredicted; we must report nodata, never interpolate
+    for lon, lat in [(7.49, 9.06), (3.40, 6.45)]:            # central Abuja, Lagos Island
+        prof = layers.soilgrids_profile(lon, lat)
+        assert prof["status"] == "nodata"
+        assert all(v is None for d in prof["depths"] for p in ("sand", "silt", "clay") for v in d[p].values())

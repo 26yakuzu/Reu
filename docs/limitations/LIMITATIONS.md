@@ -20,7 +20,8 @@ Everywhere else in Nigeria, the only other evidence is:
 to this project (see the gap report), so measured texture is always *unavailable*. SoilGrids 2.0 (250 m)
 values are shown separately as **modelled predictions** with their 5–95 % interval. They never count as
 evidence in the equipment screening, and their local accuracy in Nigeria is unknown (WoSIS training
-profiles are sparse there).
+profiles are sparse there). SoilGrids leaves **urban cores unpredicted** (e.g. central Abuja, Lagos Island):
+the app reports *nodata* there, so modelled texture is often missing exactly where construction queries happen.
 
 **WOfS water frequency.** National 30 m coverage, but historical (1984–2025) and derived from a classifier.
 A hazard flag needs at least 2 wet detections. That threshold is a precautionary choice recorded in

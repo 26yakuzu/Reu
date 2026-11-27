@@ -1,6 +1,6 @@
 # Dataset audit (generated)
 
-Generated `2026-11-27T09:32:02+00:00` by `python -I scripts/audit.py`. Boundary: `geoBoundaries-NGA-ADM0.geojson`.
+Generated `2026-11-27T09:52:34+00:00` by `python -I scripts/audit.py`. Boundary: `geoBoundaries-NGA-ADM0.geojson`.
 Every value below was computed from files in `data/raw/`; none is copied from the project brief.
 
 ## `geoboundaries_nga`
@@ -179,10 +179,19 @@ Every value below was computed from files in `data/raw/`; none is copied from th
 
 | field | value |
 |---|---|
-| status | `partial` |
+| status | `ok` |
 | layers_expected | `72` |
-| layers_present | `6` |
+| layers_with_genuine_zeros | `{"silt_0-5cm_Q0.05.tif": 6650, "silt_5-15cm_Q0.05.tif": 7358, "silt_15-30cm_Q0.05.tif": 24054, "silt_30-60cm_Q0.05.tif": 55837, "silt_60-100cm_Q0.05.tif": 57071, "silt_100-200cm_Q0.05.tif": 48437, "clay_15-30cm_Q0.05.tif": 1}` |
+| layers_needing_mask_review | `[]` |
+| retrieval_counts | `{"wcs": 65, "vrt": 7}` |
+| layers_present | `72` |
 | raster | `{"crs_name": "Interrupted_Goode_Homolosine", "res_m": [250.0, 250.0], "dtype": "int16", "nodata": -32768.0, "shape": [4282, 5502], "tags": {"Code_version": "v2.0.0", "mapped_unit": "g/kg", "Model": "Quantile Regression Forests", "WoSIS_version": "Data stream 7"}}` |
+| composition_check_by_depth / 0-5cm | `{"n": 981, "sum_of_means_pct_p01_p50_p99": [99.9, 100.0, 100.1], "nodata_share": 0.019}` |
+| composition_check_by_depth / 5-15cm | `{"n": 981, "sum_of_means_pct_p01_p50_p99": [99.9, 100.0, 100.1], "nodata_share": 0.019}` |
+| composition_check_by_depth / 15-30cm | `{"n": 981, "sum_of_means_pct_p01_p50_p99": [99.9, 100.0, 100.1], "nodata_share": 0.019}` |
+| composition_check_by_depth / 30-60cm | `{"n": 981, "sum_of_means_pct_p01_p50_p99": [99.9, 100.0, 100.1], "nodata_share": 0.019}` |
+| composition_check_by_depth / 60-100cm | `{"n": 981, "sum_of_means_pct_p01_p50_p99": [99.9, 100.0, 100.1], "nodata_share": 0.019}` |
+| composition_check_by_depth / 100-200cm | `{"n": 981, "sum_of_means_pct_p01_p50_p99": [99.9, 100.0, 100.1], "nodata_share": 0.019}` |
 
 **Eligibility by role**
 
