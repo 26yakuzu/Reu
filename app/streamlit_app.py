@@ -33,7 +33,7 @@ STATE_BADGE = {
 }
 
 st.title("TerraSense Nigeria")
-st.caption("Research prototype · Nigeria only · secondary data · " + DISCLAIMER)
+st.caption("Nigeria only · secondary data · " + DISCLAIMER)
 
 if not current_dir().exists():
     st.error("No processed data found. Run `python -I scripts/fetch.py`, `python -I scripts/extract.py` and "
@@ -137,10 +137,26 @@ with col_panel:
     for w in res["warnings"][1:]:
         st.warning(w)
 
+    STATUS_ICON = {"value": "●", "nodata": "○", "outside_coverage": "–", "unavailable": "✕"}
+
     def table(rows):
-        df = pd.DataFrame([{"layer": r["title"], "status": r["status"], "reading": r["label"], "observed": r["observation"],
-                            "res (m)": r["native_resolution_m"], "dist (m)": r["distance_m"]} for r in rows])
-        st.dataframe(df, hide_index=True, width="stretch")
+        """Readable list: covered layers in full; layers that don't cover the point collapsed to one line."""
+        shown = [r for r in rows if r["status"] in ("value", "nodata", "unavailable")]
+        skipped = [r["title"] for r in rows if r["status"] == "outside_coverage"]
+        for r in shown:
+            reading = r["label"] if r["status"] == "value" else {"nodata": "no data at this pixel",
+                                                                    "unavailable": "layer not available (not fetched)"}[r["status"]]
+            meta = " · ".join(x for x in [
+                f"observed {r['observation']}" if r.get("observation") else None,
+                f"{r['native_resolution_m']:g} m" if r.get("native_resolution_m") else None,
+                f"{r['distance_m']:.0f} m away" if r.get("distance_m") is not None else None,
+                "modelled" if r["theme"] == "wetland_model" else None] if x)
+            st.markdown(f"{STATUS_ICON[r['status']]} **{r['title']}**  \n{reading}  \n<small>{meta}</small>",
+                        unsafe_allow_html=True)
+        if skipped:
+            st.caption(f"Not covering this location ({len(skipped)}): " + "; ".join(skipped))
+        if not shown:
+            st.info("No layer in this group covers this location.")
 
     tabs = st.tabs(["Equipment", "Water / wetland", "Terrain", "Soil", "Basin", "Data quality", "Sources"])
     with tabs[0]:
